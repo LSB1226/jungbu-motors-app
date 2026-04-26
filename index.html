@@ -715,6 +715,97 @@
     }
 
 
+
+    /* final: lookup box same size as unassigned bar */
+    .lookup-box{
+      width:100% !important;
+      min-height:58px !important;
+      height:auto !important;
+      border-radius:14px !important;
+      margin:0 0 8px !important;
+      padding:8px 16px !important;
+      display:grid !important;
+      grid-template-columns:27px 1fr 18px !important;
+      grid-template-rows:minmax(40px,auto) auto !important;
+      column-gap:11px !important;
+      row-gap:0 !important;
+      align-items:center !important;
+      background:linear-gradient(135deg,rgba(16,29,45,.92),rgba(5,13,23,.92)) !important;
+      border:1px solid rgba(101,124,153,.35) !important;
+      box-shadow:0 8px 18px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.05) !important;
+      overflow:visible !important;
+      box-sizing:border-box !important;
+    }
+    .lookup-box:before,
+    .lookup-box:after{display:none !important;content:none !important;}
+    .lookup-title{display:none !important;}
+    .lookup-icon{
+      position:static !important;
+      grid-column:1 !important;
+      grid-row:1 !important;
+      width:27px !important;
+      height:27px !important;
+      border-radius:999px !important;
+      display:inline-flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      justify-self:center !important;
+      align-self:center !important;
+      transform:none !important;
+      padding:0 !important;
+      color:#8fb6ff !important;
+      border:1.5px solid #5b8cff !important;
+      background:rgba(59,130,246,.12) !important;
+      box-shadow:none !important;
+      pointer-events:none !important;
+      z-index:2 !important;
+      box-sizing:border-box !important;
+    }
+    .lookup-icon svg{
+      width:15px !important;
+      height:15px !important;
+      display:block !important;
+      margin:0 !important;
+      color:currentColor !important;
+    }
+    .lookup-box input{
+      grid-column:2 !important;
+      grid-row:1 !important;
+      align-self:center !important;
+      width:100% !important;
+      height:40px !important;
+      line-height:40px !important;
+      margin:0 !important;
+      padding:0 !important;
+      border:0 !important;
+      border-radius:0 !important;
+      background:transparent !important;
+      box-shadow:none !important;
+      color:#f8fafc !important;
+      font-size:16px !important;
+      font-weight:900 !important;
+      letter-spacing:-.4px !important;
+    }
+    .lookup-box input::placeholder{color:#f8fafc !important;opacity:.94 !important;}
+    .lookup-arrow{
+      grid-column:3 !important;
+      grid-row:1 !important;
+      align-self:center !important;
+      justify-self:end !important;
+      font-size:28px !important;
+      color:#cbd5e1 !important;
+      font-weight:300 !important;
+      opacity:.85 !important;
+      line-height:1 !important;
+      pointer-events:none !important;
+    }
+    .lookup-results{
+      grid-column:1 / -1 !important;
+      grid-row:2 !important;
+      margin-top:10px !important;
+      z-index:20 !important;
+      position:relative !important;
+    }
     @media (max-width:390px){
       .logo-built{max-width:390px;gap:10px;margin-bottom:34px}
       .grade-mark{width:35px;height:58px}
@@ -722,6 +813,39 @@
       .grade-geup{font-size:14px}
       .built-logo-text{font-size:43px;letter-spacing:-4.7px;transform:scaleX(1.07)}
     }
+
+
+    /* FINAL MICRO FIX: 차량조회 박스 = 미배정 차량 박스 동일 크기 */
+    .lookup-box{
+      width:100% !important;
+      min-height:58px !important;
+      height:58px !important;
+      border-radius:14px !important;
+      margin:0 0 8px !important;
+      padding:8px 16px !important;
+      display:grid !important;
+      grid-template-columns:27px 1fr 18px !important;
+      grid-template-rows:40px !important;
+      column-gap:11px !important;
+      row-gap:0 !important;
+      align-items:center !important;
+      background:linear-gradient(135deg,rgba(16,29,45,.92),rgba(5,13,23,.92)) !important;
+      border:1px solid rgba(101,124,153,.35) !important;
+      box-shadow:0 8px 18px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.05) !important;
+      overflow:visible !important;
+      box-sizing:border-box !important;
+    }
+    .lookup-box:before,
+    .lookup-box:after{display:none !important;content:none !important;}
+    .lookup-title{display:none !important;}
+    .lookup-icon{position:static !important;grid-column:1 !important;grid-row:1 !important;width:27px !important;height:27px !important;border-radius:999px !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;justify-self:center !important;align-self:center !important;transform:none !important;padding:0 !important;color:#8fb6ff !important;border:1.5px solid #5b8cff !important;background:rgba(59,130,246,.12) !important;box-shadow:none !important;pointer-events:none !important;z-index:2 !important;box-sizing:border-box !important;}
+    .lookup-icon svg{width:15px !important;height:15px !important;display:block !important;margin:0 !important;color:currentColor !important;}
+    .lookup-box input{grid-column:2 !important;grid-row:1 !important;align-self:center !important;width:100% !important;height:40px !important;line-height:40px !important;margin:0 !important;padding:0 !important;border:0 !important;border-radius:0 !important;background:transparent !important;box-shadow:none !important;color:#f8fafc !important;font-size:16px !important;font-weight:900 !important;letter-spacing:-.4px !important;}
+    .lookup-box input::placeholder{color:#f8fafc !important;opacity:.94 !important;}
+    .lookup-arrow{grid-column:3 !important;grid-row:1 !important;align-self:center !important;justify-self:end !important;font-size:28px !important;color:#cbd5e1 !important;font-weight:300 !important;opacity:.85 !important;line-height:1 !important;pointer-events:none !important;}
+    .lookup-results:empty{display:none !important;margin:0 !important;padding:0 !important;}
+    .lookup-results:not(:empty){display:block !important;grid-column:1 / -1 !important;grid-row:2 !important;margin-top:10px !important;z-index:20 !important;position:relative !important;}
+    .lookup-box:has(.lookup-results:not(:empty)){height:auto !important;grid-template-rows:40px auto !important;}
 
 </style>
 </head>
@@ -850,7 +974,7 @@ function baseCars(){if(screen==="all")return activeCars();if(screen==="owner")re
 function currentCars(){let l=baseCars();if(dueFilter)l=l.filter(c=>isCompleted(c)?(c.completedAt===dueFilter):(c.dueDate===dueFilter));return l}
 function setFilterDate(v){dueFilter=v;render()}function clearFilter(){dueFilter="";render()}
 function titleText(){if(screen==="all")return"전체입고차량";if(screen==="owner")return selectedOwner;if(screen==="unassigned")return`미배정 차량 <span class="title-count">${unassignedCars().length}대</span>`;if(screen==="completed")return"출고완료차량";if(screen==="form"){if(!editId)return formMode==="unassigned"?"미배정 차량 등록":"담당자 배정";const c=cars.find(x=>x.id===editId);if(isUnassigned(c||{}))return"담당자 추가";return"상태변경";}return""}
-function logoHeader(){return`<div class="home-top"><div class="logo-wrap"><div class="grade"><div class="one">1</div><div class="txt">급</div></div><div class="logo-text">중부모터스</div></div><button class="assign-btn" onclick="openAdd()"><span class="circle-plus">+</span> 담당자 배정</button></div><div class="lookup-box"><span class="lookup-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.6" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15 15l4.2 4.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></span><div class="lookup-title">차량조회</div><input id="vehicleSearch" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="등록된 차량 현황을 확인합니다" oninput="setSearchQuery(this.value)"><div id="lookupResults" class="lookup-results"></div></div><button class="unassigned-bar" onclick="openUnassigned()"><span class="unassigned-left"><span class="unassigned-mark">!</span> 미배정 차량 <b>${unassignedCars().length}</b>대</span><span class="unassigned-arrow">›</span></button><div class="head-row"><div class="section-title">입고 현황</div></div>`}
+function logoHeader(){return`<div class="home-top"><div class="logo-wrap"><div class="grade"><div class="one">1</div><div class="txt">급</div></div><div class="logo-text">중부모터스</div></div><button class="assign-btn" onclick="openAdd()"><span class="circle-plus">+</span> 담당자 배정</button></div><div class="lookup-box"><span class="lookup-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.6" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15 15l4.2 4.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></span><input id="vehicleSearch" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="차종 또는 차량번호 검색" oninput="setSearchQuery(this.value)"><span class="lookup-arrow">›</span><div id="lookupResults" class="lookup-results"></div></div><button class="unassigned-bar" onclick="openUnassigned()"><span class="unassigned-left"><span class="unassigned-mark">!</span> 미배정 차량 <b>${unassignedCars().length}</b>대</span><span class="unassigned-arrow">›</span></button><div class="head-row"><div class="section-title">입고 현황</div></div>`}
 function render(){
   const root=document.getElementById("root");
   if(screen==="home"){
