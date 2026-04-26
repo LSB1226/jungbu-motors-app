@@ -363,7 +363,7 @@ const STAFF=["권태훈","김평남","송대성"];
 const ALIGN=["휠/얼라이먼트","얼라이먼트","없음"];
 const PROCESS=["판금작업중","도장작업중","조립중","세차완료"];
 let cars=[];
-let screen="home",selectedOwner=null,editId=null,dueFilter="",returnScreen="home",returnOwner=null,returnFilter="",modalOpen=false;
+let screen="home",selectedOwner=null,editId=null,dueFilter="",returnScreen="home",returnOwner=null,returnFilter="",modalOpen=false,afterSaveBackHome=false,pendingTopScroll=false;
 let form=emptyForm();
 
 function emptyForm(){return{model:"",plate:"",alignment:"없음",intakeDate:"",dueDate:"",owner:"권태훈",process:"판금작업중",special:"",memo:""}}
@@ -373,15 +373,16 @@ function nowDateTime(){const d=new Date();return`${d.getFullYear()}-${String(d.g
 function pushState(){history.pushState({screen,selectedOwner,editId,dueFilter},"")}
 function rememberReturn(){returnScreen=screen;returnOwner=selectedOwner;returnFilter=dueFilter}
 function closeModal(){document.getElementById("modalWrap").style.display="none";modalOpen=false}
+function forceTop(){window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0}
 function goHome(push=true){screen="home";selectedOwner=null;editId=null;dueFilter="";closeModal();if(push)pushState();render()}
 function goBack(){history.back()}
 function openAdd(){rememberReturn();form=emptyForm();editId=null;screen="form";pushState();render()}
-function openAll(){screen="all";selectedOwner=null;dueFilter="";pushState();render()}
-function openOwner(n){screen="owner";selectedOwner=n;dueFilter="";pushState();render()}
+function openAll(){screen="all";selectedOwner=null;dueFilter="";pushState();render();forceTop()}
+function openOwner(n){screen="owner";selectedOwner=n;dueFilter="";pushState();render();forceTop()}
 function syncForm(){["model","plate","intakeDate","dueDate","special","memo"].forEach(id=>{const el=document.getElementById(id);if(el)form[id]=el.value})}
 function setChoice(k,v){syncForm();form[k]=v;render()}
 function openEdit(id){rememberReturn();const c=cars.find(x=>x.id===id);if(!c)return;form={model:c.model||"",plate:c.plate||"",alignment:c.alignment||"없음",intakeDate:c.intakeDate||"",dueDate:c.dueDate||"",owner:c.owner||"권태훈",process:convertOldProcess(c.process||""),special:c.special||"",memo:c.memo||""};editId=id;screen="form";closeModal();pushState();render()}
-function restoreReturn(){screen=returnScreen||"home";selectedOwner=returnOwner||null;dueFilter=returnFilter||"";editId=null;closeModal();pushState();render()}
+function restoreReturn(){screen=returnScreen||"home";selectedOwner=returnOwner||null;dueFilter=returnFilter||"";editId=null;closeModal();afterSaveBackHome=true;pendingTopScroll=true;history.replaceState({screen,selectedOwner,editId:null,dueFilter,afterSaveReturn:true},"");render();forceTop();setTimeout(forceTop,0);setTimeout(forceTop,80)}
 async function saveCar(){syncForm();form.model=form.model.trim();form.plate=form.plate.trim();form.special=form.special.trim();form.memo=form.memo.trim();if(!form.model||!form.plate){alert("차종과 차량번호는 꼭 입력해주세요.");return}if(editId){await carsRef.doc(String(editId)).update({...form,updatedAt:nowDateTime()});restoreReturn()}else{await carsRef.add({...form,createdAtMs:Date.now(),updatedAt:nowDateTime()});goHome(true)}}
 async function completeCar(id){if(!confirm("출고완료/삭제 처리할까요?"))return;await carsRef.doc(String(id)).delete();closeModal()}
 function countByOwner(n){return cars.filter(c=>c.owner===n).length}
@@ -413,6 +414,19 @@ function escapeHtml(s){return String(s||"").replaceAll("&","&amp;").replaceAll("
 function esc(s){return escapeHtml(s).replaceAll("\n"," ")}
 document.getElementById("modalWrap").addEventListener("click",e=>{if(e.target.id==="modalWrap")closeModal()})
 window.addEventListener("popstate",e=>{
+  if(afterSaveBackHome){
+    afterSaveBackHome=false;
+    screen="home";
+    selectedOwner=null;
+    editId=null;
+    dueFilter="";
+    closeModal();
+    history.replaceState({screen:"home",selectedOwner:null,editId:null,dueFilter:""},"");
+    render();
+    forceTop();
+    return;
+  }
+
   if(modalOpen){
     closeModal();
   }
@@ -434,6 +448,12 @@ render();
 carsRef.onSnapshot(snapshot=>{
   cars=snapshot.docs.map(doc=>({id:doc.id,...doc.data(),process:convertOldProcess((doc.data().process)||"")})).sort((a,b)=>(b.createdAtMs||0)-(a.createdAtMs||0));
   render();
+  if(pendingTopScroll){
+    pendingTopScroll=false;
+    forceTop();
+    setTimeout(forceTop,0);
+    setTimeout(forceTop,80);
+  }
 });
 </script>
 </body>
