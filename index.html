@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>중부모터스 입고 현황</title>
+  <style>
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{
+      margin:0;
+      font-family:"Pretendard","SUIT","Apple SD Gothic Neo",-apple-system,BlinkMacSystemFont,"Noto Sans KR","Segoe UI",sans-serif;
+      color:#f8fafc;
+      background:
+        radial-gradient(circle at 18% 8%,rgba(82,116,150,.20),transparent 28%),
+        radial-gradient(circle at 85% 38%,rgba(20,184,166,.12),transparent 30%),
+        linear-gradient(180deg,#18212b 0%,#091015 100%);
+      min-height:100vh;
+    }
+    .app{max-width:520px;margin:0 auto;padding:28px 18px 46px}
+    .logo-wrap{
+      display:flex;align-items:center;gap:10px;
+      margin:0 0 36px 30px;
+      filter:drop-shadow(0 8px 5px rgba(0,0,0,.55));
+    }
+    .grade{
+      width:32px;height:60px;border-radius:7px;
+      background:linear-gradient(180deg,#19469d,#08275f);
+      border:2px solid #e7edf6;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 5px 8px rgba(0,0,0,.5);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      font-weight:900;line-height:1;color:#fff;flex:0 0 auto;
+    }
+    .grade .one{font-size:31px}
+    .grade .txt{font-size:13px;margin-top:1px}
+    .logo-text{
+      font-size:43px;font-weight:900;letter-spacing:-4.5px;white-space:nowrap;
+      transform:skewX(-8deg);
+      background:linear-gradient(180deg,#fff 0%,#f8fafc 32%,#8b929c 70%,#fff 100%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      text-shadow:0 5px 1px rgba(0,0,0,.5);
+    }
+
+    .logo-built{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:13px;
+      margin:0 auto 38px;
+      width:100%;
+      max-width:470px;
+      filter:drop-shadow(0 9px 6px rgba(0,0,0,.55));
+      transform:skewX(-5deg);
+    }
+    .grade-mark{
+      width:39px;
+      height:64px;
+      border-radius:8px;
+      background:linear-gradient(180deg,#2b68d8 0%,#16408f 54%,#09225c 100%);
+      border:2px solid rgba(241,245,249,.96);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.20),0 5px 10px rgba(0,0,0,.45);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      flex:0 0 auto;
+      transform:skewX(5deg);
+      line-height:.9;
+    }
+    .grade-one{
+      font-size:34px;
+      font-weight:950;
+      letter-spacing:-2px;
+      margin-top:1px;
+    }
+    .grade-geup{
+      font-size:15px;
+      font-weight:950;
+      margin-top:2px;
+      letter-spacing:-1px;
+    }
+    .built-logo-text{
+      font-family:"Arial Black","Pretendard","SUIT","Noto Sans KR",sans-serif;
+      font-size:50px;
+      font-weight:950;
+      letter-spacing:-5.2px;
+      line-height:1;
+      white-space:nowrap;
+      transform:scaleX(1.08);
+      transform-origin:left center;
+      background:linear-gradient(180deg,#ffffff 0%,#f8fafc 32%,#8f98a5 68%,#ffffff 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      text-shadow:0 5px 1px rgba(0,0,0,.55);
+    }
+
+    .head-row{
+      display:flex;align-items:flex-end;justify-content:space-between;
+      margin-bottom:28px;gap:16px;
+    }
+    .section-title{
+      position:relative;
+      padding-left:24px;
+      font-size:25px;font-weight:900;letter-spacing:-1px;color:#fff;
+      line-height:1.25;
+    }
+    .section-title:before{
+      content:"";position:absolute;left:0;top:-11px;
+      width:29px;height:56px;border:1.5px solid rgba(148,163,184,.35);
+      border-right:0;border-radius:14px 0 0 14px;
+    }
+    .section-title:after{
+      content:"";position:absolute;left:24px;bottom:-12px;
+      width:86px;height:3px;border-radius:99px;
+      background:linear-gradient(90deg,#f7d47f 0%,rgba(247,212,127,.7) 65%,transparent);
+      box-shadow:0 0 8px rgba(247,212,127,.45);
+    }
+    .assign-btn{
+      display:flex;align-items:center;justify-content:center;gap:9px;
+      min-width:168px;
+      border:1.5px solid #f1c66c;
+      color:#ffe6a3;
+      background:rgba(10,16,24,.64);
+      border-radius:17px;
+      padding:12px 13px;
+      font-size:17px;font-weight:900;
+      box-shadow:0 11px 22px rgba(0,0,0,.35),inset 0 0 22px rgba(241,198,108,.08);
+    }
+    .circle-plus{
+      width:29px;
+      height:29px;
+      border:2.4px solid currentColor;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:21px;
+      font-weight:900;
+      line-height:0;
+      padding-bottom:2px;
+      flex:0 0 auto;
+    }
+    button,input,textarea{font-family:inherit}
+    button{border:0;cursor:pointer}
+    .home-card{
+      width:100%;min-height:166px;border-radius:21px;margin-bottom:18px;
+      padding:30px 20px 30px 24px;
+      display:grid;grid-template-columns:78px 1fr auto 24px;gap:20px;align-items:center;
+      border:1px solid rgba(148,163,184,.24);
+      box-shadow:0 14px 30px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.08);
+      color:#fff;position:relative;overflow:hidden;text-align:left;
+    }
+    .home-card:after{
+      content:"";position:absolute;inset:0;
+      background:
+        radial-gradient(circle at 20% 0%,rgba(255,255,255,.10),transparent 42%),
+        linear-gradient(90deg,rgba(255,255,255,.03),transparent);
+      pointer-events:none;
+    }
+    .home-card.all{background:linear-gradient(135deg,rgba(43,56,75,.94),rgba(13,21,32,.92))}
+    .home-card.green{background:linear-gradient(135deg,rgba(8,91,72,.98),rgba(5,50,45,.91))}
+    .home-card.blue{background:linear-gradient(135deg,rgba(30,67,121,.98),rgba(9,24,45,.93))}
+    .home-card.purple{background:linear-gradient(135deg,rgba(62,42,101,.98),rgba(24,17,42,.94))}
+    .iconbox{
+      position:relative;z-index:1;
+      width:78px;height:78px;border-radius:18px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.13);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:inset 0 0 24px rgba(255,255,255,.08);
+    }
+    .icon{
+      width:44px;height:44px;display:block
+    }
+    .card-main{position:relative;z-index:1;min-width:0;display:flex;align-items:center;min-height:78px}
+    .card-title{
+      font-size:25px;font-weight:900;letter-spacing:-0.8px;line-height:1.18;
+      margin-bottom:0;text-shadow:0 2px 3px rgba(0,0,0,.25);
+      display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+    }
+    .role-badge{
+      font-size:13px;padding:5px 9px;border-radius:999px;
+      background:rgba(45,212,191,.13);color:#67e8f9;font-weight:900;
+      text-shadow:none;
+    }
+    .card-sub{display:none}
+    .card-count{
+      position:relative;z-index:1;display:flex;align-items:baseline;gap:4px;
+      font-weight:900;text-shadow:0 2px 3px rgba(0,0,0,.3);white-space:nowrap;
+    }
+    .card-count .num{font-size:37px;letter-spacing:-1.5px}
+    .card-count .dae{font-size:16px;color:#cbd5e1;font-weight:900}
+    .arrow{position:relative;z-index:1;font-size:41px;color:#fff;opacity:.92;font-weight:300}
+    .footer-note{
+      margin-top:32px;padding:18px 15px;border-radius:15px;
+      background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.055);
+      color:#e5e7eb;font-size:17px;font-weight:900;text-align:center;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .footer-note b{color:#f6d47d}
+    .footer-icon{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:27px;
+      height:27px;
+      margin-right:9px;
+      vertical-align:-7px;
+      color:#f6d47d;
+    }
+    .footer-icon svg{
+      width:27px;
+      height:27px;
+      filter:drop-shadow(0 2px 4px rgba(0,0,0,.35));
+    }
+
+    .topbar{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}
+    .topbar button,.filter-clear{
+      border-radius:16px;padding:13px 10px;font-weight:900;font-size:15px;color:#e5e7eb;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08)
+    }
+    .topbar .add{
+      background:linear-gradient(135deg,#334155,#1e293b);
+      color:#e2e8f0;
+      border:1px solid rgba(148,163,184,.25);
+      box-shadow:0 10px 20px rgba(216,166,74,.18);
+    }
+    .page-title{font-size:30px;font-weight:900;letter-spacing:-1px;margin:10px 2px 12px}
+    .filter{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:13px;margin-bottom:14px}
+    .filter-title{font-size:13px;color:#cbd5e1;font-weight:900;margin-bottom:8px}
+    .filter-row{display:grid;grid-template-columns:1fr .62fr;gap:8px}
+    input,textarea{
+      width:100%;border:1px solid rgba(255,255,255,.09);background:rgba(15,23,42,.74);
+      color:#fff;border-radius:15px;padding:13px 12px;font-size:16px;font-weight:850;outline:none
+    }
+    input[type=date]{color-scheme:dark}
+    textarea{min-height:92px;resize:vertical;line-height:1.45}
+    textarea::placeholder{color:#94a3b8}
+    .car-card{border-radius:21px;background:linear-gradient(135deg,rgba(30,41,59,.94),rgba(15,23,42,.9));border:1px solid rgba(148,163,184,.16);box-shadow:0 12px 26px rgba(0,0,0,.26);padding:16px;margin-bottom:13px}
+    .car-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .model{
+      color:#f8fafc;
+      font-size:29px;
+      font-weight:900;
+      letter-spacing:-1px;
+      text-shadow:0 1px 3px rgba(0,0,0,.28);
+    }
+    .plate{
+      color:#cbd5e1;
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:-.4px;
+      margin-top:4px;
+    }
+    .process{
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .process.body{background:rgba(59,130,246,.18);border-color:rgba(96,165,250,.34);color:#bfdbfe}
+    .process.paint{background:rgba(168,85,247,.18);border-color:rgba(192,132,252,.34);color:#e9d5ff}
+    .process.assembly{background:rgba(245,158,11,.18);border-color:rgba(251,191,36,.34);color:#fde68a}
+    .process.wash{background:rgba(34,197,94,.18);border-color:rgba(74,222,128,.34);color:#bbf7d0}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+    .info.wide{grid-column:1 / -1;min-height:64px}
+    .info{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.06);border-radius:15px;padding:11px;min-height:58px}
+    .label{color:#94a3b8;font-size:12px;font-weight:950}
+    .value{color:#fff;font-size:15px;font-weight:900;margin-top:4px;word-break:break-word}
+    .updated{margin-top:10px;text-align:right;color:#94a3b8;font-size:12px;font-weight:800}
+    .btn-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:13px}
+    .action{border-radius:15px;padding:12px 7px;font-weight:900;background:rgba(255,255,255,.1);color:#fff;font-size:15px}
+    .action.dark{
+      background:linear-gradient(135deg,#e5e7eb,#cbd5e1);
+      color:#0f172a;
+      box-shadow:0 7px 14px rgba(203,213,225,.12);
+    }
+    .action.done{background:linear-gradient(135deg,#ef4444,#991b1b);color:white;box-shadow:0 8px 16px rgba(239,68,68,.23)}
+    .form{border-radius:24px;background:linear-gradient(135deg,rgba(30,41,59,.94),rgba(15,23,42,.92));border:1px solid rgba(148,163,184,.16);box-shadow:0 12px 26px rgba(0,0,0,.26);padding:17px}
+    .field{margin-bottom:15px}.field-title{font-size:14px;font-weight:900;color:#cbd5e1;margin-bottom:8px}
+    .choice{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.choice.process-choice{grid-template-columns:1fr 1fr}
+    .choice button{border-radius:15px;padding:13px 5px;min-height:48px;background:rgba(255,255,255,.08);color:#dbeafe;border:1px solid rgba(255,255,255,.08);font-size:14px;font-weight:950}
+    .choice button.active{background:#e5e7eb;color:#0f172a}
+    .save{width:100%;border-radius:18px;padding:16px;background:linear-gradient(135deg,#0f766e,#164e63);color:white;font-size:18px;font-weight:900;box-shadow:0 12px 22px rgba(15,118,110,.22)}
+    .empty{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);color:#cbd5e1;border-radius:20px;padding:30px 16px;text-align:center;font-weight:950}
+    .modal-wrap{position:fixed;inset:0;display:none;align-items:flex-end;z-index:50;padding:12px;background:rgba(0,0,0,.62)}
+    .modal{width:100%;max-width:520px;margin:0 auto;background:#111827;border-radius:24px;padding:17px;max-height:88vh;overflow:auto;border:1px solid rgba(255,255,255,.1)}
+    .modal-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.modal-title h2{margin:0;font-size:25px;font-weight:950}
+    .close{width:38px;height:38px;border-radius:999px;background:rgba(255,255,255,.1);color:#fff;font-weight:950}
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-bottom:8px;
+    }
+    .detail-line{
+      background:rgba(255,255,255,.07);
+      border-radius:15px;
+      padding:12px;
+      margin-bottom:0;
+      min-height:64px;
+    }
+    .detail-line.wide{
+      grid-column:1 / -1;
+      min-height:78px;
+    }
+    .detail-label{font-size:12px;font-weight:900;color:#94a3b8}.detail-value{font-size:16px;font-weight:900;color:#fff;margin-top:5px;white-space:pre-wrap;word-break:break-word}
+  
+    .role-badge{
+      color:#f8fafc !important;
+      background:rgba(255,255,255,.05) !important;
+      border:1px solid rgba(255,255,255,.18) !important;
+      padding:4px 10px !important;
+      border-radius:999px;
+      font-size:14px !important;
+      font-weight:900 !important;
+      opacity:.96;
+    }
+    .green .role-badge,
+    .blue .role-badge,
+    .purple .role-badge{
+      color:#f8fafc !important;
+      background:transparent !important;
+      border:0 !important;
+    }
+
+
+    @media (max-width:390px){
+      .logo-built{max-width:390px;gap:10px;margin-bottom:34px}
+      .grade-mark{width:35px;height:58px}
+      .grade-one{font-size:31px}
+      .grade-geup{font-size:14px}
+      .built-logo-text{font-size:43px;letter-spacing:-4.7px;transform:scaleX(1.07)}
+    }
+
+</style>
+</head>
+<body>
+  <div class="app"><div id="root"></div></div>
+  <div id="modalWrap" class="modal-wrap"><div id="modal" class="modal"></div></div>
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCEO-70xcR0PbrNRg3LKT2zFqYJMYorkKI",
+  authDomain: "jungbu-motors.firebaseapp.com",
+  projectId: "jungbu-motors",
+  storageBucket: "jungbu-motors.firebasestorage.app",
+  messagingSenderId: "11499953629",
+  appId: "1:11499953629:web:9d52ca98111d10d8756a34",
+  measurementId: "G-13K71YYDVS"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const carsRef = db.collection("cars");
+
+const STAFF=["권태훈","김평남","송대성"];
+const ALIGN=["휠/얼라이먼트","얼라이먼트","없음"];
+const PROCESS=["판금작업중","도장작업중","조립중","세차완료"];
+let cars=[];
+let screen="home",selectedOwner=null,editId=null,dueFilter="",returnScreen="home",returnOwner=null,returnFilter="";
+let form=emptyForm();
+
+function emptyForm(){return{model:"",plate:"",alignment:"없음",intakeDate:"",dueDate:"",owner:"권태훈",process:"판금작업중",special:"",memo:""}}
+function convertOldProcess(v){if(v==="판금중"||v==="판금작업")return"판금작업중";if(v==="도장중"||v==="도장작업")return"도장작업중";if(v==="조립")return"조립중";if(PROCESS.includes(v))return v;return"판금작업중"}
+function saveStorage(){}
+function nowDateTime(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`}
+function pushState(){history.pushState({screen,selectedOwner,editId,dueFilter},"")}
+function rememberReturn(){returnScreen=screen;returnOwner=selectedOwner;returnFilter=dueFilter}
+function closeModal(){document.getElementById("modalWrap").style.display="none"}
+function goHome(push=true){screen="home";selectedOwner=null;editId=null;dueFilter="";closeModal();if(push)pushState();render()}
+function goBack(){history.back()}
+function openAdd(){rememberReturn();form=emptyForm();editId=null;screen="form";pushState();render()}
+function openAll(){screen="all";selectedOwner=null;dueFilter="";pushState();render()}
+function openOwner(n){screen="owner";selectedOwner=n;dueFilter="";pushState();render()}
+function syncForm(){["model","plate","intakeDate","dueDate","special","memo"].forEach(id=>{const el=document.getElementById(id);if(el)form[id]=el.value})}
+function setChoice(k,v){syncForm();form[k]=v;render()}
+function openEdit(id){rememberReturn();const c=cars.find(x=>x.id===id);if(!c)return;form={model:c.model||"",plate:c.plate||"",alignment:c.alignment||"없음",intakeDate:c.intakeDate||"",dueDate:c.dueDate||"",owner:c.owner||"권태훈",process:convertOldProcess(c.process||""),special:c.special||"",memo:c.memo||""};editId=id;screen="form";closeModal();pushState();render()}
+function restoreReturn(){screen=returnScreen||"home";selectedOwner=returnOwner||null;dueFilter=returnFilter||"";editId=null;closeModal();pushState();render()}
+async function saveCar(){syncForm();form.model=form.model.trim();form.plate=form.plate.trim();form.special=form.special.trim();form.memo=form.memo.trim();if(!form.model||!form.plate){alert("차종과 차량번호는 꼭 입력해주세요.");return}if(editId){await carsRef.doc(String(editId)).update({...form,updatedAt:nowDateTime()});restoreReturn()}else{await carsRef.add({...form,createdAtMs:Date.now(),updatedAt:nowDateTime()});goHome(true)}}
+async function completeCar(id){if(!confirm("출고완료/삭제 처리할까요?"))return;await carsRef.doc(String(id)).delete();closeModal()}
+function countByOwner(n){return cars.filter(c=>c.owner===n).length}
+function baseCars(){if(screen==="all")return cars;if(screen==="owner")return cars.filter(c=>c.owner===selectedOwner);return[]}
+function currentCars(){let l=baseCars();if(dueFilter)l=l.filter(c=>c.dueDate===dueFilter);return l}
+function setFilterDate(v){dueFilter=v;render()}function clearFilter(){dueFilter="";render()}
+function titleText(){if(screen==="all")return"전체입고차량";if(screen==="owner")return selectedOwner;if(screen==="form")return editId?"차량 편집":"담당자 배정";return""}
+function logoHeader(){return`<div class="logo-wrap"><div class="grade"><div class="one">1</div><div class="txt">급</div></div><div class="logo-text">중부모터스</div></div><div class="head-row"><div class="section-title">입고 현황</div><button class="assign-btn" onclick="openAdd()"><span class="circle-plus">+</span> 담당자 배정</button></div>`}
+function render(){const root=document.getElementById("root");if(screen==="home"){root.innerHTML=logoHeader()+homeCard("all",clipboardIcon(),"전체입고차량","전체 차량 현황을 확인하세요",cars.length,"all")+homeCard("green",userIcon(),"권태훈","담당 차량 현황을 확인하세요",countByOwner("권태훈"),"owner","권태훈")+homeCard("blue",userIcon(),"김평남","담당 차량 현황을 확인하세요",countByOwner("김평남"),"owner","김평남")+homeCard("purple",userIcon(),"송대성","담당 차량 현황을 확인하세요",countByOwner("송대성"),"owner","송대성")+`<div class="footer-note"><span class="footer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.2 8.4-7 10-3.8-1.6-7-5-7-10V6l7-3z"/><path d="M8.5 12.2l2.2 2.2 4.8-5"/></svg></span>모든 차량은 <b>정확한 관리</b>로 안전하게 책임집니다.</div>`;return}
+if(screen==="form"){root.innerHTML=`<div class="topbar"><button onclick="goBack()">← 뒤로가기</button><button class="add" onclick="goHome()">첫화면</button></div><div class="page-title">${titleText()}</div><div class="form">${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${!editId?`<div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div>`:""}${editId?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div>`:""}<div class="field"><div class="field-title">담당자 메모</div><textarea id="memo" placeholder="예) 사고부위 등">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div><button class="save" onclick="saveCar()">저장하기</button></div>`;return}
+const list=currentCars();root.innerHTML=`<div class="topbar"><button onclick="goBack()">← 뒤로가기</button><button class="add" onclick="openAdd()"><span class="circle-plus" style="width:19px;height:19px;font-size:13px;margin-right:5px;">+</span> 추가</button></div><div class="page-title">${titleText()}</div><div class="filter"><div class="filter-title">출고예정일자 필터</div><div class="filter-row"><input type="date" value="${esc(dueFilter)}" onchange="setFilterDate(this.value)"><button class="filter-clear" onclick="clearFilter()">필터해제</button></div></div>${list.length===0?`<div class="empty">등록된 차량이 없습니다.</div>`:list.map(carCard).join("")}`}
+function homeCard(color,icon,title,sub,count,type,owner=""){const click=type==="all"?"openAll()":`openOwner('${owner}')`;return`<button class="home-card ${color}" onclick="${click}"><div class="iconbox">${icon}</div><div class="card-main"><div class="card-title">${title}${owner?`<span class="role-badge">담당자</span>`:""}</div><div class="card-sub">${sub}</div></div><div class="card-count"><span class="num">${count}</span><span class="dae">대</span></div><div class="arrow">›</div></button>`}
+function clipboardIcon(){return`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="4" width="10" height="17" rx="2"/><path d="M9 4.5h6"/><path d="M9.5 9h5"/><path d="M9.5 13h5"/><path d="M9.5 17h3"/></svg>`}
+function userIcon(){return`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c1.7-4.4 13.3-4.4 15 0"/></svg>`}
+function processClass(v){
+ const p=convertOldProcess(v||"");
+ if(p==="판금작업중") return "body";
+ if(p==="도장작업중") return "paint";
+ if(p==="조립중") return "assembly";
+ if(p==="세차완료") return "wash";
+ return "";
+}
+function fieldInput(label,id,value){return`<div class="field"><div class="field-title">${label}</div><input id="${id}" value="${esc(value)}"></div>`}
+function carCard(c){return`<div class="car-card"><div class="car-head"><div><div class="model">${escapeHtml(c.model)}</div><div class="plate">${escapeHtml(c.plate)}</div></div><span class="process ${processClass(c.process)}">${escapeHtml(convertOldProcess(c.process||""))}</span></div><div class="info-grid">${info("담당자",c.owner)}${info("휠 얼라이먼트",c.alignment)}${info("입고일자",c.intakeDate||"미정")}${info("출고예정일자",c.dueDate||"미정")}${info("담당자 메모",c.memo||"없음","wide")}</div><div class="updated">최근수정 ${escapeHtml(c.updatedAt||"-")}</div><div class="btn-row"><button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action" onclick="openDetail('${c.id}')">상세보기</button><button class="action done" onclick="completeCar('${c.id}')">출고완료</button></div></div>`}
+function info(l,v,cls=""){return`<div class="info ${cls}"><div class="label">${l}</div><div class="value">${escapeHtml(v||"")}</div></div>`}
+function openDetail(id){const c=cars.find(x=>x.id===id);if(!c)return;document.getElementById("modal").innerHTML=`<div class="modal-title"><h2>상세보기</h2><button class="close" onclick="closeModal()">×</button></div><div class="detail-grid">${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자",c.owner)}${detail("현재공정",convertOldProcess(c.process||""))}${detail("휠 얼라이먼트",c.alignment)}${detail("입고일자",c.intakeDate||"미정")}${detail("출고예정일자",c.dueDate||"미정")}${detail("최근수정",c.updatedAt||"-")}${detail("담당자 메모",c.memo||"없음","wide")}${detail("특이사항",c.special||"없음","wide")}</div><div class="btn-row" style="grid-template-columns:1fr 1fr;"><button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action done" onclick="completeCar('${c.id}')">출고완료</button></div>`;document.getElementById("modalWrap").style.display="flex"}
+function detail(l,v,cls=""){return`<div class="detail-line ${cls}"><div class="detail-label">${l}</div><div class="detail-value">${escapeHtml(String(v||""))}</div></div>`}
+function escapeHtml(s){return String(s||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function esc(s){return escapeHtml(s).replaceAll("\n"," ")}
+document.getElementById("modalWrap").addEventListener("click",e=>{if(e.target.id==="modalWrap")closeModal()})
+window.addEventListener("popstate",e=>{closeModal();if(e.state){screen=e.state.screen||"home";selectedOwner=e.state.selectedOwner||null;editId=e.state.editId||null;dueFilter=e.state.dueFilter||""}else{screen="home";selectedOwner=null;editId=null;dueFilter=""}render()})
+history.replaceState({screen:"home",selectedOwner:null,editId:null,dueFilter:""},"")
+render();
+carsRef.onSnapshot(snapshot=>{
+  cars=snapshot.docs.map(doc=>({id:doc.id,...doc.data(),process:convertOldProcess((doc.data().process)||"")})).sort((a,b)=>(b.createdAtMs||0)-(a.createdAtMs||0));
+  render();
+});
+</script>
+</body>
+</html>
