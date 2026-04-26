@@ -225,6 +225,9 @@
       box-shadow:0 10px 20px rgba(216,166,74,.18);
     }
     .page-title{font-size:30px;font-weight:900;letter-spacing:-1px;margin:10px 2px 12px}
+    .title-count{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#f8fafc;font-size:15px;font-weight:950;vertical-align:3px}
+    .topbar.single{grid-template-columns:1fr}
+    .unassigned-count{display:inline-flex;align-items:center;justify-content:center;margin-left:4px;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#f8fafc;font-size:13px;font-weight:950;line-height:1.1}
     .filter{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:13px;margin-bottom:14px}
     .filter-title{font-size:13px;color:#cbd5e1;font-weight:900;margin-bottom:8px}
     .filter-row{display:grid;grid-template-columns:1fr .62fr;gap:8px}
@@ -326,6 +329,80 @@
       border:0 !important;
     }
 
+    .home-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin:-18px 0 18px;
+    }
+    .home-actions .assign-btn{
+      width:100%;
+      min-width:0;
+      padding:12px 8px;
+    }
+    .lookup-box{
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:20px;
+      padding:13px;
+      margin-bottom:20px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .lookup-title{
+      font-size:13px;
+      color:#cbd5e1;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+    .lookup-box input{
+      font-size:15px;
+    }
+    .lookup-results{
+      margin-top:10px;
+    }
+    .lookup-item{
+      width:100%;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:12px;
+      margin-top:8px;
+      border-radius:15px;
+      background:rgba(15,23,42,.75);
+      border:1px solid rgba(255,255,255,.08);
+      color:#fff;
+      text-align:left;
+    }
+    .lookup-main{
+      min-width:0;
+    }
+    .lookup-model{
+      font-size:16px;
+      font-weight:950;
+      color:#fff;
+    }
+    .lookup-plate{
+      font-size:13px;
+      font-weight:900;
+      color:#cbd5e1;
+      margin-top:3px;
+    }
+    .lookup-tag{
+      font-size:12px;
+      font-weight:950;
+      color:#f6d47d;
+      white-space:nowrap;
+    }
+    .home-section-gap{
+      margin-top:6px;
+    }
+    .process{
+      font-size:13.5px;
+      padding:8px 11px;
+      letter-spacing:-.2px;
+    }
+
 
     @media (max-width:390px){
       .logo-built{max-width:390px;gap:10px;margin-bottom:34px}
@@ -363,38 +440,147 @@ const STAFF=["권태훈","김평남","송대성"];
 const ALIGN=["휠/얼라이먼트","얼라이먼트","없음"];
 const PROCESS=["판금작업중","도장작업중","조립중","세차완료"];
 let cars=[];
-let screen="home",selectedOwner=null,editId=null,dueFilter="",returnScreen="home",returnOwner=null,returnFilter="",modalOpen=false,afterSaveBackHome=false,pendingTopScroll=false;
+let screen="home",selectedOwner=null,editId=null,dueFilter="",returnScreen="home",returnOwner=null,returnFilter="",modalOpen=false,afterSaveBackHome=false,pendingTopScroll=false,searchQuery="",formMode="assigned";
 let form=emptyForm();
 
 function emptyForm(){return{model:"",plate:"",alignment:"없음",intakeDate:"",dueDate:"",owner:"권태훈",process:"판금작업중",special:"",memo:""}}
 function convertOldProcess(v){if(v==="판금중"||v==="판금작업")return"판금작업중";if(v==="도장중"||v==="도장작업")return"도장작업중";if(v==="조립")return"조립중";if(PROCESS.includes(v))return v;return"판금작업중"}
 function saveStorage(){}
+function nowDate(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
 function nowDateTime(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`}
 function pushState(){history.pushState({screen,selectedOwner,editId,dueFilter},"")}
 function rememberReturn(){returnScreen=screen;returnOwner=selectedOwner;returnFilter=dueFilter}
 function closeModal(){document.getElementById("modalWrap").style.display="none";modalOpen=false}
 function forceTop(){window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0}
-function goHome(push=true){screen="home";selectedOwner=null;editId=null;dueFilter="";closeModal();if(push)pushState();render()}
+function goHome(push=true){screen="home";selectedOwner=null;editId=null;dueFilter="";closeModal();if(push)pushState();render();forceTop()}
 function goBack(){history.back()}
-function openAdd(){rememberReturn();form=emptyForm();editId=null;screen="form";pushState();render()}
+function openAdd(){rememberReturn();form=emptyForm();editId=null;formMode="assigned";screen="form";pushState();render();forceTop()}
+function openUnassignedAdd(){rememberReturn();form=emptyForm();form.owner="";form.process="";form.dueDate="";form.memo="";editId=null;formMode="unassigned";screen="form";pushState();render();forceTop()}
 function openAll(){screen="all";selectedOwner=null;dueFilter="";pushState();render();forceTop()}
 function openOwner(n){screen="owner";selectedOwner=n;dueFilter="";pushState();render();forceTop()}
+function openUnassigned(){screen="unassigned";selectedOwner=null;dueFilter="";pushState();render();forceTop()}
+function openCompleted(){screen="completed";selectedOwner=null;dueFilter="";pushState();render();forceTop()}
+function isCompleted(c){return c.completed===true || c.status==="출고완료"}
+function isUnassigned(c){return !isCompleted(c) && (c.assigned===false || !c.owner || c.owner==="미배정")}
+function isActiveAssigned(c){return !isCompleted(c) && !isUnassigned(c)}
 function syncForm(){["model","plate","intakeDate","dueDate","special","memo"].forEach(id=>{const el=document.getElementById(id);if(el)form[id]=el.value})}
 function setChoice(k,v){syncForm();form[k]=v;render()}
-function openEdit(id){rememberReturn();const c=cars.find(x=>x.id===id);if(!c)return;form={model:c.model||"",plate:c.plate||"",alignment:c.alignment||"없음",intakeDate:c.intakeDate||"",dueDate:c.dueDate||"",owner:c.owner||"권태훈",process:convertOldProcess(c.process||""),special:c.special||"",memo:c.memo||""};editId=id;screen="form";closeModal();pushState();render()}
-function restoreReturn(){screen=returnScreen||"home";selectedOwner=returnOwner||null;dueFilter=returnFilter||"";editId=null;closeModal();afterSaveBackHome=true;pendingTopScroll=true;history.replaceState({screen,selectedOwner,editId:null,dueFilter,afterSaveReturn:true},"");render();forceTop();setTimeout(forceTop,0);setTimeout(forceTop,80)}
-async function saveCar(){syncForm();form.model=form.model.trim();form.plate=form.plate.trim();form.special=form.special.trim();form.memo=form.memo.trim();if(!form.model||!form.plate){alert("차종과 차량번호는 꼭 입력해주세요.");return}if(editId){await carsRef.doc(String(editId)).update({...form,updatedAt:nowDateTime()});restoreReturn()}else{await carsRef.add({...form,createdAtMs:Date.now(),updatedAt:nowDateTime()});goHome(true)}}
-async function completeCar(id){if(!confirm("출고완료/삭제 처리할까요?"))return;await carsRef.doc(String(id)).delete();closeModal()}
-function countByOwner(n){return cars.filter(c=>c.owner===n).length}
-function baseCars(){if(screen==="all")return cars;if(screen==="owner")return cars.filter(c=>c.owner===selectedOwner);return[]}
-function currentCars(){let l=baseCars();if(dueFilter)l=l.filter(c=>c.dueDate===dueFilter);return l}
+function openEdit(id){rememberReturn();const c=cars.find(x=>x.id===id);if(!c)return;formMode=isUnassigned(c)?"unassignedEdit":"assignedEdit";form={model:c.model||"",plate:c.plate||"",alignment:c.alignment||"없음",intakeDate:c.intakeDate||"",dueDate:c.dueDate||"",owner:c.owner||"",process:convertOldProcess(c.process||""),special:c.special||"",memo:c.memo||""};editId=id;screen="form";closeModal();pushState();render();forceTop()}
+function restoreReturn(){
+  if(returnScreen==="unassigned" && form.owner && form.owner!=="미배정"){
+    screen="all";
+    selectedOwner=null;
+    dueFilter="";
+  }else{
+    screen=returnScreen||"home";
+    selectedOwner=returnOwner||null;
+    dueFilter=returnFilter||"";
+  }
+  editId=null;
+  closeModal();
+  afterSaveBackHome=true;
+  pendingTopScroll=true;
+  history.replaceState({screen,selectedOwner,editId:null,dueFilter,afterSaveReturn:true},"");
+  render();
+  forceTop();
+  setTimeout(forceTop,0);
+  setTimeout(forceTop,80);
+}
+async function saveCar(){
+  syncForm();
+  form.model=form.model.trim();
+  form.plate=form.plate.trim();
+  form.special=(form.special||"").trim();
+  form.memo=(form.memo||"").trim();
+  if(!form.model||!form.plate){alert("차종과 차량번호는 꼭 입력해주세요.");return}
+  if(editId){
+    const editingCar=cars.find(x=>x.id===editId);
+    const assignedNow=form.owner && form.owner!=="미배정";
+    await carsRef.doc(String(editId)).update({...form,assigned:assignedNow,completed:false,status:"",updatedAt:nowDateTime()});
+    restoreReturn();
+  }else if(formMode==="unassigned"){
+    await carsRef.add({...form,owner:"",alignment:"없음",dueDate:"",process:"",memo:"",assigned:false,completed:false,status:"",createdAtMs:Date.now(),updatedAt:nowDateTime()});
+    screen="unassigned";
+    selectedOwner=null;
+    dueFilter="";
+    editId=null;
+    afterSaveBackHome=true;
+    pendingTopScroll=true;
+    history.replaceState({screen,selectedOwner:null,editId:null,dueFilter:"",afterSaveReturn:true},"");
+    render();
+    forceTop();
+  }else{
+    await carsRef.add({...form,owner:form.owner||"권태훈",assigned:true,completed:false,status:"",createdAtMs:Date.now(),updatedAt:nowDateTime()});
+    goHome(true);
+  }
+}
+async function completeCar(id){
+  if(!confirm("출고완료 처리할까요?"))return;
+  await carsRef.doc(String(id)).update({completed:true,status:"출고완료",completedAt:nowDate(),updatedAt:nowDateTime()});
+  closeModal();
+  afterSaveBackHome=true;
+  openCompleted();
+}
+async function deleteCompleted(id){
+  if(!confirm("완전히 삭제할까요?"))return;
+  await carsRef.doc(String(id)).delete();
+  closeModal();
+}
+async function deleteUnassigned(id){
+  if(!confirm("미배정 차량을 삭제할까요?"))return;
+  await carsRef.doc(String(id)).delete();
+  closeModal();
+}
+function activeCars(){return cars.filter(isActiveAssigned)}
+function unassignedCars(){return cars.filter(isUnassigned)}
+function completedCars(){return cars.filter(isCompleted)}
+function countByOwner(n){return activeCars().filter(c=>c.owner===n).length}
+function baseCars(){if(screen==="all")return activeCars();if(screen==="owner")return activeCars().filter(c=>c.owner===selectedOwner);if(screen==="unassigned")return unassignedCars();if(screen==="completed")return completedCars();return[]}
+function currentCars(){let l=baseCars();if(dueFilter)l=l.filter(c=>isCompleted(c)?(c.completedAt===dueFilter):(c.dueDate===dueFilter));return l}
 function setFilterDate(v){dueFilter=v;render()}function clearFilter(){dueFilter="";render()}
-function titleText(){if(screen==="all")return"전체입고차량";if(screen==="owner")return selectedOwner;if(screen==="form")return editId?"차량 편집":"담당자 배정";return""}
-function logoHeader(){return`<div class="logo-wrap"><div class="grade"><div class="one">1</div><div class="txt">급</div></div><div class="logo-text">중부모터스</div></div><div class="head-row"><div class="section-title">입고 현황</div><button class="assign-btn" onclick="openAdd()"><span class="circle-plus">+</span> 담당자 배정</button></div>`}
-function render(){const root=document.getElementById("root");if(screen==="home"){root.innerHTML=logoHeader()+homeCard("all",clipboardIcon(),"전체입고차량","전체 차량 현황을 확인하세요",cars.length,"all")+homeCard("green",userIcon(),"권태훈","담당 차량 현황을 확인하세요",countByOwner("권태훈"),"owner","권태훈")+homeCard("blue",userIcon(),"김평남","담당 차량 현황을 확인하세요",countByOwner("김평남"),"owner","김평남")+homeCard("purple",userIcon(),"송대성","담당 차량 현황을 확인하세요",countByOwner("송대성"),"owner","송대성")+`<div class="footer-note"><span class="footer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.2 8.4-7 10-3.8-1.6-7-5-7-10V6l7-3z"/><path d="M8.5 12.2l2.2 2.2 4.8-5"/></svg></span>모든 차량은 <b>정확한 관리</b>로 안전하게 책임집니다.</div>`;return}
-if(screen==="form"){root.innerHTML=`<div class="topbar"><button onclick="goBack()">← 뒤로가기</button><button class="add" onclick="goHome()">첫화면</button></div><div class="page-title">${titleText()}</div><div class="form">${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${!editId?`<div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div>`:""}${editId?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div>`:""}<div class="field"><div class="field-title">담당자 메모</div><textarea id="memo" placeholder="예) 사고부위 등">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div><button class="save" onclick="saveCar()">저장하기</button></div>`;return}
-const list=currentCars();root.innerHTML=`<div class="topbar"><button onclick="goBack()">← 뒤로가기</button><button class="add" onclick="openAdd()"><span class="circle-plus" style="width:19px;height:19px;font-size:13px;margin-right:5px;">+</span> 추가</button></div><div class="page-title">${titleText()}</div><div class="filter"><div class="filter-title">출고예정일자 필터</div><div class="filter-row"><input type="date" value="${esc(dueFilter)}" onchange="setFilterDate(this.value)"><button class="filter-clear" onclick="clearFilter()">필터해제</button></div></div>${list.length===0?`<div class="empty">등록된 차량이 없습니다.</div>`:list.map(carCard).join("")}`}
-function homeCard(color,icon,title,sub,count,type,owner=""){const click=type==="all"?"openAll()":`openOwner('${owner}')`;return`<button class="home-card ${color}" onclick="${click}"><div class="iconbox">${icon}</div><div class="card-main"><div class="card-title">${title}</div><div class="card-sub">${sub}</div></div><div class="card-count"><span class="num">${count}</span><span class="dae">대</span></div><div class="arrow">›</div></button>`}
+function titleText(){if(screen==="all")return"전체입고차량";if(screen==="owner")return selectedOwner;if(screen==="unassigned")return`미배정 차량 <span class="title-count">${unassignedCars().length}대</span>`;if(screen==="completed")return"출고완료차량";if(screen==="form"){if(!editId)return formMode==="unassigned"?"미배정 차량 등록":"담당자 배정";const c=cars.find(x=>x.id===editId);if(isUnassigned(c||{}))return"담당자 추가";return"상태변경";}return""}
+function logoHeader(){return`<div class="logo-wrap"><div class="grade"><div class="one">1</div><div class="txt">급</div></div><div class="logo-text">중부모터스</div></div><div class="home-actions"><button class="assign-btn" onclick="openUnassigned()"><span class="circle-plus">!</span> 미배정 차량 <span class="unassigned-count">${unassignedCars().length}대</span></button><button class="assign-btn" onclick="openAdd()"><span class="circle-plus">+</span> 담당자 배정</button></div><div class="lookup-box"><div class="lookup-title">차량조회</div><input id="vehicleSearch" autocomplete="off" placeholder="차종 또는 차량번호 검색" oninput="setSearchQuery(this.value)"><div id="lookupResults" class="lookup-results"></div></div><div class="head-row"><div class="section-title">입고 현황</div></div>`}
+function render(){
+  const root=document.getElementById("root");
+  if(screen==="home"){
+    root.innerHTML=logoHeader()+homeCard("all",clipboardIcon(),"전체입고차량","전체 차량 현황을 확인하세요",activeCars().length,"all")+homeCard("green",userIcon(),"권태훈","담당 차량 현황을 확인하세요",countByOwner("권태훈"),"owner","권태훈")+homeCard("blue",userIcon(),"김평남","담당 차량 현황을 확인하세요",countByOwner("김평남"),"owner","김평남")+homeCard("purple",userIcon(),"송대성","담당 차량 현황을 확인하세요",countByOwner("송대성"),"owner","송대성")+homeCard("all",clipboardIcon(),"출고완료차량","출고 완료 차량을 확인하세요",completedCars().length,"completed")+`<div class="footer-note"><span class="footer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.2 8.4-7 10-3.8-1.6-7-5-7-10V6l7-3z"/><path d="M8.5 12.2l2.2 2.2 4.8-5"/></svg></span>모든 차량은 <b>정확한 관리</b>로 안전하게 책임집니다.</div>`;
+    const search=document.getElementById("vehicleSearch");
+    if(search){search.value=searchQuery;renderLookupResults()}
+    return;
+  }
+  if(screen==="form"){
+    const editingCar=cars.find(x=>x.id===editId);
+    const isNew=!editId;
+    const unassignedEdit=editId && isUnassigned(editingCar||{});
+    const assignedEdit=editId && !unassignedEdit;
+    let formHtml="";
+    if(isNew && formMode==="unassigned"){
+      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`;
+    }else if(isNew){
+      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div><div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">전달사항</div><textarea id="memo" placeholder="예) 사고부위 등">${escapeHtml(form.memo)}</textarea></div>`;
+    }else{
+      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${unassignedEdit?`<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div>`:""}${assignedEdit?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo" placeholder="예) 사고부위 등">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`:`<div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`}`;
+    }
+    root.innerHTML=`<div class="topbar"><button onclick="goBack()">← 뒤로가기</button><button class="add" onclick="goHome()">첫화면</button></div><div class="page-title">${titleText()}</div><div class="form">${formHtml}<button class="save" onclick="saveCar()">저장하기</button></div>`;
+    return;
+  }
+  const list=currentCars();
+  const dateLabel=screen==="completed"?"출고완료일자 필터":"출고예정일자 필터";
+  const filterHtml=screen==="unassigned"?"":`<div class="filter"><div class="filter-title">${dateLabel}</div><div class="filter-row"><input type="date" value="${esc(dueFilter)}" onchange="setFilterDate(this.value)"><button class="filter-clear" onclick="clearFilter()">필터해제</button></div></div>`;
+  const topbarHtml=screen==="completed"?`<div class="topbar single"><button onclick="goBack()">← 뒤로가기</button></div>`:`<div class="topbar"><button onclick="goBack()">← 뒤로가기</button><button class="add" onclick="${screen==="unassigned"?"openUnassignedAdd()":"openAdd()"}"><span class="circle-plus" style="width:19px;height:19px;font-size:13px;margin-right:5px;">+</span> 추가</button></div>`;
+  root.innerHTML=`${topbarHtml}<div class="page-title">${titleText()}</div>${filterHtml}${list.length===0?`<div class="empty">등록된 차량이 없습니다.</div>`:list.map(carCard).join("")}`
+}
+function setSearchQuery(v){searchQuery=v;renderLookupResults()}
+function renderLookupResults(){
+  const box=document.getElementById("lookupResults");
+  if(!box)return;
+  const q=(searchQuery||"").trim().toLowerCase();
+  if(!q){box.innerHTML="";return}
+  const result=cars.filter(c=>`${c.model||""} ${c.plate||""} ${c.owner||""}`.toLowerCase().includes(q)).slice(0,12);
+  box.innerHTML=result.length?result.map(c=>`<button class="lookup-item" onclick="openDetail('${c.id}')"><div class="lookup-main"><div class="lookup-model">${escapeHtml(c.model||"-")}</div><div class="lookup-plate">${escapeHtml(c.plate||"-")}</div></div><div class="lookup-tag">${lookupStatus(c)}</div></button>`).join(""):`<div class="empty" style="padding:16px;margin-top:8px;">조회 결과가 없습니다.</div>`;
+}
+function lookupStatus(c){if(isCompleted(c))return"출고완료";if(isUnassigned(c))return"미배정";return c.owner||"-"}
+function homeCard(color,icon,title,sub,count,type,owner=""){let click=type==="all"?"openAll()":type==="completed"?"openCompleted()":`openOwner('${owner}')`;return`<button class="home-card ${color}" onclick="${click}"><div class="iconbox">${icon}</div><div class="card-main"><div class="card-title">${title}</div><div class="card-sub">${sub}</div></div><div class="card-count"><span class="num">${count}</span><span class="dae">대</span></div><div class="arrow">›</div></button>`}
 function clipboardIcon(){return`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="4" width="10" height="17" rx="2"/><path d="M9 4.5h6"/><path d="M9.5 9h5"/><path d="M9.5 13h5"/><path d="M9.5 17h3"/></svg>`}
 function userIcon(){return`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c1.7-4.4 13.3-4.4 15 0"/></svg>`}
 function processClass(v){
@@ -405,10 +591,47 @@ function processClass(v){
  if(p==="세차완료") return "wash";
  return "";
 }
-function fieldInput(label,id,value){return`<div class="field"><div class="field-title">${label}</div><input id="${id}" value="${esc(value)}"></div>`}
-function carCard(c){return`<div class="car-card"><div class="car-head"><div><div class="model">${escapeHtml(c.model)}</div><div class="plate">${escapeHtml(c.plate)}</div></div><span class="process ${processClass(c.process)}">${escapeHtml(convertOldProcess(c.process||""))}</span></div><div class="info-grid">${info("담당자",c.owner)}${info("휠 얼라이먼트",c.alignment)}${info("입고일자",c.intakeDate||"미정")}${info("출고예정일자",c.dueDate||"미정")}${info("담당자 메모",c.memo||"없음","wide")}</div><div class="updated">최근수정 ${escapeHtml(c.updatedAt||"-")}</div><div class="btn-row"><button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action" onclick="openDetail('${c.id}')">상세보기</button><button class="action done" onclick="completeCar('${c.id}')">출고완료</button></div></div>`}
+function fieldInput(label,id,value){return`<div class="field"><div class="field-title">${label}</div><input id="${id}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="${esc(value)}"></div>`}
+function carCard(c){
+  const completed=isCompleted(c);
+  const unassigned=isUnassigned(c);
+  const dateInfo=completed?info("출고완료일자",c.completedAt||"미정"):info("출고예정일자",c.dueDate||"미정");
+  const memoBlock=completed?info("담당자 메모",c.memo||"없음","wide"):info("담당자 메모",c.memo||"없음","wide");
+  let buttons="";
+  if(completed){
+    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action" onclick="openDetail('${c.id}')">상세보기</button><button class="action done" onclick="deleteCompleted('${c.id}')">삭제</button>`;
+  }else if(unassigned || screen==="unassigned"){
+    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action done" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
+  }else{
+    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">상태변경</button><button class="action" onclick="openDetail('${c.id}')">상세보기</button><button class="action done" onclick="completeCar('${c.id}')">출고완료</button>`;
+  }
+  const gridCols=(unassigned||screen==="unassigned")&&!completed?` style="grid-template-columns:1fr 1fr;"`:"";
+  const processHtml=(completed||unassigned)?"":`<span class="process ${processClass(c.process)}">${escapeHtml(convertOldProcess(c.process||""))}</span>`;
+  const infoHtml=unassigned&&!completed?`${info("담당자","미배정")}${info("특이사항",c.special||"없음","wide")}`:`${info("담당자",unassigned?"미배정":c.owner)}${info("휠 얼라이먼트",c.alignment)}${info("입고일자",c.intakeDate||"미정")}${dateInfo}${memoBlock}`;
+  return`<div class="car-card"><div class="car-head"><div><div class="model">${escapeHtml(c.model)}</div><div class="plate">${escapeHtml(c.plate)}</div></div>${processHtml}</div><div class="info-grid">${infoHtml}</div><div class="updated">최근수정 ${escapeHtml(c.updatedAt||"-")}</div><div class="btn-row"${gridCols}>${buttons}</div></div>`
+}
 function info(l,v,cls=""){return`<div class="info ${cls}"><div class="label">${l}</div><div class="value">${escapeHtml(v||"")}</div></div>`}
-function openDetail(id){const c=cars.find(x=>x.id===id);if(!c)return;document.getElementById("modal").innerHTML=`<div class="modal-title"><h2>상세보기</h2><button class="close" onclick="closeModal()">×</button></div><div class="detail-grid">${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자",c.owner)}${detail("현재공정",convertOldProcess(c.process||""))}${detail("휠 얼라이먼트",c.alignment)}${detail("입고일자",c.intakeDate||"미정")}${detail("출고예정일자",c.dueDate||"미정")}${detail("최근수정",c.updatedAt||"-")}${detail("담당자 메모",c.memo||"없음","wide")}${detail("특이사항",c.special||"없음","wide")}</div><div class="btn-row" style="grid-template-columns:1fr 1fr;"><button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action done" onclick="completeCar('${c.id}')">출고완료</button></div>`;document.getElementById("modalWrap").style.display="flex";modalOpen=true;history.pushState({screen,selectedOwner,editId,dueFilter,modal:true},"")}
+function openDetail(id){
+  const c=cars.find(x=>x.id===id);if(!c)return;
+  const completed=isCompleted(c);
+  const unassigned=isUnassigned(c);
+  const dateLine=completed?detail("출고완료일자",c.completedAt||"미정"):detail("출고예정일자",c.dueDate||"미정");
+  const processLine=completed?"":detail("현재공정",convertOldProcess(c.process||""));
+  const detailInfo=unassigned&&!completed?`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자","미배정")}${detail("특이사항",c.special||"없음","wide")}`:`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자",unassigned?"미배정":c.owner)}${processLine}${detail("휠 얼라이먼트",c.alignment)}${detail("입고일자",c.intakeDate||"미정")}${dateLine}${detail("담당자 메모",c.memo||"없음","wide")}${detail("특이사항",c.special||"없음","wide")}`;
+  let btns="";
+  if(completed){
+    btns=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action done" onclick="deleteCompleted('${c.id}')">삭제</button>`;
+  }else if(unassigned){
+    btns=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action done" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
+  }else{
+    btns=`<button class="action dark" onclick="openEdit('${c.id}')">상태변경</button><button class="action done" onclick="completeCar('${c.id}')">출고완료</button>`;
+  }
+  document.getElementById("modal").innerHTML=`<div class="modal-title"><h2>상세보기</h2><button class="close" onclick="closeModal()">×</button></div><div class="detail-grid">${detailInfo}</div><div class="btn-row" style="grid-template-columns:1fr 1fr;">${btns}</div>`;
+  document.getElementById("modalWrap").style.display="flex";
+  const modal=document.getElementById("modal");if(modal)modal.scrollTop=0;
+  modalOpen=true;
+  history.pushState({screen,selectedOwner,editId,dueFilter,modal:true},"")
+}
 function detail(l,v,cls=""){return`<div class="detail-line ${cls}"><div class="detail-label">${l}</div><div class="detail-value">${escapeHtml(String(v||""))}</div></div>`}
 function escapeHtml(s){return String(s||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
 function esc(s){return escapeHtml(s).replaceAll("\n"," ")}
@@ -454,7 +677,6 @@ carsRef.onSnapshot(snapshot=>{
     setTimeout(forceTop,0);
     setTimeout(forceTop,80);
   }
-});
-</script>
+});</script>
 </body>
 </html>
