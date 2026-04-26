@@ -404,6 +404,187 @@
     }
 
 
+    /* IMAGE STYLE HOME DASHBOARD */
+    body{
+      background:
+        radial-gradient(circle at 88% 0%,rgba(37,99,235,.22),transparent 28%),
+        radial-gradient(circle at 12% 10%,rgba(59,130,246,.10),transparent 25%),
+        linear-gradient(180deg,#06111e 0%,#02070d 100%) !important;
+    }
+    .app{max-width:468px;padding:28px 18px 34px !important}
+    .home-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:26px;
+    }
+    .home-top .logo-wrap{
+      margin:0 !important;
+      gap:8px;
+      filter:drop-shadow(0 7px 8px rgba(0,0,0,.65));
+      min-width:0;
+    }
+    .home-top .grade{
+      width:42px !important;
+      height:58px !important;
+      border-radius:4px !important;
+      transform:skewX(-7deg);
+      background:linear-gradient(180deg,#2357b6 0%,#12326f 100%) !important;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 5px 12px rgba(0,0,0,.55) !important;
+    }
+    .home-top .grade .one{font-size:32px !important;line-height:.82;transform:skewX(7deg)}
+    .home-top .grade .txt{font-size:13px !important;transform:skewX(7deg)}
+    .home-top .logo-text{
+      font-size:35px !important;
+      letter-spacing:-4px !important;
+      text-shadow:0 4px 1px rgba(0,0,0,.6),0 0 18px rgba(255,255,255,.08) !important;
+      transform:skewX(-8deg) scaleX(1.02) !important;
+      line-height:1;
+    }
+    .home-top .assign-btn{
+      min-width:135px !important;
+      border-radius:999px !important;
+      padding:10px 12px !important;
+      font-size:13px !important;
+      gap:7px !important;
+      color:#f8d178 !important;
+      background:rgba(5,10,18,.35) !important;
+      border:1.5px solid rgba(248,209,120,.9) !important;
+      box-shadow:0 8px 18px rgba(0,0,0,.35),inset 0 0 18px rgba(248,209,120,.06) !important;
+      flex:0 0 auto;
+    }
+    .home-top .circle-plus{width:25px;height:25px;font-size:19px;border-width:2px;padding-bottom:1px}
+    .lookup-box{
+      position:relative;
+      display:grid;
+      grid-template-columns:74px 1fr 18px;
+      align-items:center;
+      gap:16px;
+      min-height:104px;
+      border-radius:22px !important;
+      padding:18px 18px !important;
+      margin:0 0 16px !important;
+      background:linear-gradient(135deg,rgba(21,34,51,.95),rgba(5,13,23,.92)) !important;
+      border:1px solid rgba(101,124,153,.35) !important;
+      box-shadow:0 16px 30px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.07) !important;
+      overflow:hidden;
+    }
+    .lookup-box:before{
+      content:"";
+      width:66px;
+      height:66px;
+      border-radius:19px;
+      background:linear-gradient(145deg,rgba(42,59,82,.96),rgba(13,23,38,.96));
+      border:1px solid rgba(148,163,184,.28);
+      box-shadow:inset 0 0 24px rgba(255,255,255,.06),0 9px 18px rgba(0,0,0,.35);
+      grid-row:1 / span 2;
+    }
+    .lookup-box:after{
+      content:"›";
+      position:absolute;
+      right:18px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#94a3b8;
+      font-size:38px;
+      font-weight:200;
+    }
+    .lookup-icon{
+      position:absolute;
+      left:38px;
+      top:50%;
+      transform:translateY(-50%);
+      width:34px;
+      height:34px;
+      pointer-events:none;
+      z-index:2;
+      opacity:.95;
+    }
+    .lookup-title{
+      grid-column:2;
+      margin:0 0 4px !important;
+      font-size:23px !important;
+      line-height:1.15;
+      color:#f8fafc !important;
+      font-weight:950 !important;
+      letter-spacing:-.8px;
+    }
+    .lookup-box input{
+      grid-column:2;
+      padding:0 !important;
+      border:0 !important;
+      border-radius:0 !important;
+      background:transparent !important;
+      color:#cbd5e1 !important;
+      font-size:14px !important;
+      font-weight:850 !important;
+      box-shadow:none !important;
+    }
+    .lookup-box input::placeholder{color:#cbd5e1;opacity:.86}
+    .lookup-results{grid-column:1 / -1;margin-top:10px !important;z-index:3}
+    .unassigned-bar{
+      width:100%;
+      min-height:48px;
+      border-radius:14px;
+      margin:0 0 23px;
+      padding:12px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:linear-gradient(135deg,rgba(16,29,45,.92),rgba(5,13,23,.92));
+      border:1px solid rgba(101,124,153,.35);
+      color:#e5e7eb;
+      box-shadow:0 8px 18px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.05);
+      text-align:left;
+    }
+    .unassigned-left{display:flex;align-items:center;gap:11px;font-size:16px;font-weight:900;letter-spacing:-.4px}
+    .unassigned-mark{
+      width:27px;height:27px;border-radius:999px;
+      display:inline-flex;align-items:center;justify-content:center;
+      color:#8fb6ff;border:1.5px solid #5b8cff;background:rgba(59,130,246,.12);
+      font-weight:950;font-size:17px;
+    }
+    .unassigned-left b{font-size:22px;color:#fff;margin-left:3px;letter-spacing:-.8px}
+    .unassigned-arrow{font-size:28px;color:#cbd5e1;font-weight:300;opacity:.85}
+    .head-row{margin:0 0 14px !important;align-items:center !important;justify-content:flex-start !important;gap:14px !important}
+    .section-title{font-size:24px !important;padding-left:34px !important;margin-left:0;letter-spacing:-1px}
+    .section-title:before{display:none !important}
+    .section-title:after{
+      left:0 !important;top:50% !important;bottom:auto !important;transform:translateY(-50%);
+      width:24px !important;height:2px !important;background:#f1c66c !important;
+      box-shadow:0 0 8px rgba(241,198,108,.45) !important;
+    }
+    .home-card{
+      min-height:68px !important;
+      border-radius:16px !important;
+      margin-bottom:8px !important;
+      padding:10px 14px 10px 12px !important;
+      grid-template-columns:54px 1fr auto 16px !important;
+      gap:12px !important;
+      background:linear-gradient(135deg,rgba(16,29,45,.94),rgba(5,13,23,.94)) !important;
+      border:1px solid rgba(101,124,153,.30) !important;
+      box-shadow:0 9px 18px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.05) !important;
+    }
+    .home-card .iconbox{
+      width:46px !important;height:46px !important;border-radius:13px !important;
+      box-shadow:inset 0 0 18px rgba(255,255,255,.06),0 6px 12px rgba(0,0,0,.28) !important;
+    }
+    .home-card.all .iconbox{background:linear-gradient(135deg,#1f7aff,#123c91) !important;border-color:rgba(96,165,250,.45) !important}
+    .home-card.green .iconbox{background:linear-gradient(135deg,#16836f,#0d5149) !important;border-color:rgba(45,212,191,.38) !important}
+    .home-card.blue .iconbox{background:linear-gradient(135deg,#276fd8,#163f92) !important;border-color:rgba(96,165,250,.38) !important}
+    .home-card.purple .iconbox{background:linear-gradient(135deg,#75602b,#3f3218) !important;border-color:rgba(246,212,125,.35) !important}
+    .home-card .icon{width:29px !important;height:29px !important}
+    .card-main{min-height:46px !important;align-items:flex-start !important;justify-content:center;flex-direction:column}
+    .card-title{font-size:18px !important;letter-spacing:-.7px !important;line-height:1.1 !important;margin-bottom:4px !important}
+    .card-sub{display:block !important;color:#cbd5e1;font-size:12px;font-weight:800;line-height:1.15;opacity:.9}
+    .card-count .num{font-size:20px !important;letter-spacing:-.8px !important}
+    .card-count .dae{font-size:15px !important;color:#e5e7eb !important}
+    .arrow{font-size:30px !important;color:#cbd5e1 !important;opacity:.75 !important}
+    .footer-note{margin-top:16px !important}
+
+
     @media (max-width:390px){
       .logo-built{max-width:390px;gap:10px;margin-bottom:34px}
       .grade-mark{width:35px;height:58px}
@@ -539,11 +720,11 @@ function baseCars(){if(screen==="all")return activeCars();if(screen==="owner")re
 function currentCars(){let l=baseCars();if(dueFilter)l=l.filter(c=>isCompleted(c)?(c.completedAt===dueFilter):(c.dueDate===dueFilter));return l}
 function setFilterDate(v){dueFilter=v;render()}function clearFilter(){dueFilter="";render()}
 function titleText(){if(screen==="all")return"전체입고차량";if(screen==="owner")return selectedOwner;if(screen==="unassigned")return`미배정 차량 <span class="title-count">${unassignedCars().length}대</span>`;if(screen==="completed")return"출고완료차량";if(screen==="form"){if(!editId)return formMode==="unassigned"?"미배정 차량 등록":"담당자 배정";const c=cars.find(x=>x.id===editId);if(isUnassigned(c||{}))return"담당자 추가";return"상태변경";}return""}
-function logoHeader(){return`<div class="logo-wrap"><div class="grade"><div class="one">1</div><div class="txt">급</div></div><div class="logo-text">중부모터스</div></div><div class="home-actions"><button class="assign-btn" onclick="openUnassigned()"><span class="circle-plus">!</span> 미배정 차량 <span class="unassigned-count">${unassignedCars().length}대</span></button><button class="assign-btn" onclick="openAdd()"><span class="circle-plus">+</span> 담당자 배정</button></div><div class="lookup-box"><div class="lookup-title">차량조회</div><input id="vehicleSearch" autocomplete="off" placeholder="차종 또는 차량번호 검색" oninput="setSearchQuery(this.value)"><div id="lookupResults" class="lookup-results"></div></div><div class="head-row"><div class="section-title">입고 현황</div></div>`}
+function logoHeader(){return`<div class="home-top"><div class="logo-wrap"><div class="grade"><div class="one">1</div><div class="txt">급</div></div><div class="logo-text">중부모터스</div></div><button class="assign-btn" onclick="openAdd()"><span class="circle-plus">+</span> 담당자 배정</button></div><div class="lookup-box"><svg class="lookup-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><div class="lookup-title">차량조회</div><input id="vehicleSearch" autocomplete="off" placeholder="등록된 차량 현황을 확인합니다" oninput="setSearchQuery(this.value)"><div id="lookupResults" class="lookup-results"></div></div><button class="unassigned-bar" onclick="openUnassigned()"><span class="unassigned-left"><span class="unassigned-mark">!</span> 미배정 차량 <b>${unassignedCars().length}</b>대</span><span class="unassigned-arrow">›</span></button><div class="head-row"><div class="section-title">입고 현황</div></div>`}
 function render(){
   const root=document.getElementById("root");
   if(screen==="home"){
-    root.innerHTML=logoHeader()+homeCard("all",clipboardIcon(),"전체입고차량","전체 차량 현황을 확인하세요",activeCars().length,"all")+homeCard("green",userIcon(),"권태훈","담당 차량 현황을 확인하세요",countByOwner("권태훈"),"owner","권태훈")+homeCard("blue",userIcon(),"김평남","담당 차량 현황을 확인하세요",countByOwner("김평남"),"owner","김평남")+homeCard("purple",userIcon(),"송대성","담당 차량 현황을 확인하세요",countByOwner("송대성"),"owner","송대성")+homeCard("all",clipboardIcon(),"출고완료차량","출고 완료 차량을 확인하세요",completedCars().length,"completed")+`<div class="footer-note"><span class="footer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.2 8.4-7 10-3.8-1.6-7-5-7-10V6l7-3z"/><path d="M8.5 12.2l2.2 2.2 4.8-5"/></svg></span>모든 차량은 <b>정확한 관리</b>로 안전하게 책임집니다.</div>`;
+    root.innerHTML=logoHeader()+homeCard("all",carIcon(),"전체","전체 차량 현황",activeCars().length,"all")+homeCard("green",userIcon(),"권태훈","담당 차량 현황",countByOwner("권태훈"),"owner","권태훈")+homeCard("blue",userIcon(),"김평남","담당 차량 현황",countByOwner("김평남"),"owner","김평남")+homeCard("green",userIcon(),"송대성","담당 차량 현황",countByOwner("송대성"),"owner","송대성")+homeCard("purple",checkIcon(),"출고 완료 차량","출고 완료된 차량 내역",completedCars().length,"completed")+`<div class="footer-note"><span class="footer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.2 8.4-7 10-3.8-1.6-7-5-7-10V6l7-3z"/><path d="M8.5 12.2l2.2 2.2 4.8-5"/></svg></span>모든 차량은 <b>정확한 관리</b>로 안전하게 책임집니다.</div>`;
     const search=document.getElementById("vehicleSearch");
     if(search){search.value=searchQuery;renderLookupResults()}
     return;
@@ -581,6 +762,8 @@ function renderLookupResults(){
 }
 function lookupStatus(c){if(isCompleted(c))return"출고완료";if(isUnassigned(c))return"미배정";return c.owner||"-"}
 function homeCard(color,icon,title,sub,count,type,owner=""){let click=type==="all"?"openAll()":type==="completed"?"openCompleted()":`openOwner('${owner}')`;return`<button class="home-card ${color}" onclick="${click}"><div class="iconbox">${icon}</div><div class="card-main"><div class="card-title">${title}</div><div class="card-sub">${sub}</div></div><div class="card-count"><span class="num">${count}</span><span class="dae">대</span></div><div class="arrow">›</div></button>`}
+function carIcon(){return`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l1.4-4.2A2.5 2.5 0 0 1 8.8 6h6.4a2.5 2.5 0 0 1 2.4 1.8L19 12"/><path d="M4 12h16v6H4z"/><circle cx="7.5" cy="16" r="1.2"/><circle cx="16.5" cy="16" r="1.2"/><path d="M6 18v1.5M18 18v1.5"/></svg>`}
+function checkIcon(){return`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M8.5 12.4l2.2 2.2 4.9-5.2"/></svg>`}
 function clipboardIcon(){return`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="4" width="10" height="17" rx="2"/><path d="M9 4.5h6"/><path d="M9.5 9h5"/><path d="M9.5 13h5"/><path d="M9.5 17h3"/></svg>`}
 function userIcon(){return`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c1.7-4.4 13.3-4.4 15 0"/></svg>`}
 function processClass(v){
