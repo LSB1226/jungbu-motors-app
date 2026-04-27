@@ -238,6 +238,13 @@
     input[type=date]{color-scheme:dark}
     textarea{min-height:92px;resize:vertical;line-height:1.45}
     textarea::placeholder{color:#94a3b8}
+
+    input:-webkit-autofill,
+    textarea:-webkit-autofill{
+      -webkit-box-shadow:0 0 0 1000px rgba(15,23,42,.74) inset !important;
+      -webkit-text-fill-color:#fff !important;
+      transition:background-color 9999s ease-out 0s !important;
+    }
     .car-card{border-radius:21px;background:linear-gradient(135deg,rgba(30,41,59,.94),rgba(15,23,42,.9));border:1px solid rgba(148,163,184,.16);box-shadow:0 12px 26px rgba(0,0,0,.26);padding:16px;margin-bottom:13px}
     .car-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
     .model{
@@ -800,6 +807,31 @@
     }
 
 
+
+    /* user requested patch: lookup vertical center + bigger assign text */
+    .home-top .assign-btn{
+      font-size:14px !important;
+    }
+    .lookup-box{
+      align-items:center !important;
+      place-items:center stretch !important;
+    }
+    .lookup-icon{
+      align-self:center !important;
+      justify-self:center !important;
+      transform:none !important;
+    }
+    .lookup-box input{
+      align-self:center !important;
+      height:42px !important;
+      line-height:42px !important;
+      padding:0 !important;
+      margin:0 !important;
+      display:block !important;
+      transform:none !important;
+    }
+
+
     @media (max-width:390px){
       .logo-built{max-width:390px;gap:10px;margin-bottom:34px}
       .grade-mark{width:35px;height:58px}
@@ -934,13 +966,14 @@ function baseCars(){if(screen==="all")return activeCars();if(screen==="owner")re
 function currentCars(){let l=baseCars();if(dueFilter)l=l.filter(c=>isCompleted(c)?(c.completedAt===dueFilter):(c.dueDate===dueFilter));return l}
 function setFilterDate(v){dueFilter=v;render()}function clearFilter(){dueFilter="";render()}
 function titleText(){if(screen==="all")return"전체입고차량";if(screen==="owner")return selectedOwner;if(screen==="unassigned")return`미배정 차량 <span class="title-count">${unassignedCars().length}대</span>`;if(screen==="completed")return"출고완료차량";if(screen==="form"){if(!editId)return formMode==="unassigned"?"미배정 차량 등록":(formMode==="processAdd"?"차량추가":"담당자 배정");const c=cars.find(x=>x.id===editId);if(isUnassigned(c||{}))return"담당자 추가";return"상태변경";}return""}
-function logoHeader(){return`<div class="home-top"><div class="logo-wrap"><div class="grade"><div class="one">1</div><div class="txt">급</div></div><div class="logo-text">중부모터스</div></div><button class="assign-btn" onclick="openAdd()"><span class="circle-plus">+</span> 담당자 배정</button></div><div class="lookup-box"><span class="lookup-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.6" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15 15l4.2 4.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></span><div class="lookup-title">차량조회</div><input id="vehicleSearch" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="차량조회" oninput="setSearchQuery(this.value)"><div id="lookupResults" class="lookup-results"></div></div><button class="unassigned-bar" onclick="openUnassigned()"><span class="unassigned-left"><span class="unassigned-mark">!</span> 미배정 차량 <b>${unassignedCars().length}</b>대</span><span class="unassigned-arrow">›</span></button><div class="head-row"><div class="section-title">입고 현황</div></div>`}
+function logoHeader(){return`<div class="home-top"><div class="logo-wrap"><div class="grade"><div class="one">1</div><div class="txt">급</div></div><div class="logo-text">중부모터스</div></div><button class="assign-btn" onclick="openAdd()"><span class="circle-plus">+</span> 담당자 배정</button></div><div class="lookup-box"><span class="lookup-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.6" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15 15l4.2 4.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></span><div class="lookup-title">차량조회</div><input id="vehicleSearch" autocomplete="new-password" data-lpignore="true" data-form-type="other" inputmode="search" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="차량조회" oninput="setSearchQuery(this.value)"><div id="lookupResults" class="lookup-results"></div></div><button class="unassigned-bar" onclick="openUnassigned()"><span class="unassigned-left"><span class="unassigned-mark">!</span> 미배정 차량 <b>${unassignedCars().length}</b>대</span><span class="unassigned-arrow">›</span></button><div class="head-row"><div class="section-title">입고 현황</div></div>`}
 function render(){
   const root=document.getElementById("root");
   if(screen==="home"){
     root.innerHTML=logoHeader()+homeCard("all",carIcon(),"전체","전체 차량 현황",activeCars().length,"all")+homeCard("pink",userIcon(),"권태훈","담당 차량 현황",countByOwner("권태훈"),"owner","권태훈")+homeCard("blue",userIcon(),"김평남","담당 차량 현황",countByOwner("김평남"),"owner","김평남")+homeCard("green",userIcon(),"송대성","담당 차량 현황",countByOwner("송대성"),"owner","송대성")+homeCard("purple",checkIcon(),"출고 완료 차량","출고 완료된 차량 내역",completedCars().length,"completed")+`<div class="footer-note"><span class="footer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.2 8.4-7 10-3.8-1.6-7-5-7-10V6l7-3z"/><path d="M8.5 12.2l2.2 2.2 4.8-5"/></svg></span>모든 차량은 <b>정확한 관리</b>로 안전하게 책임집니다.</div>`;
     const search=document.getElementById("vehicleSearch");
     if(search){search.value=searchQuery;renderLookupResults()}
+    disableAutocompleteAll();
     return;
   }
   if(screen==="form"){
@@ -950,24 +983,26 @@ function render(){
     const assignedEdit=editId && !unassignedEdit;
     let formHtml="";
     if(isNew && formMode==="unassigned"){
-      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`;
+      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" autocomplete="new-password" data-lpignore="true" data-form-type="other" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">특이사항</div><textarea id="special" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other">${escapeHtml(form.special)}</textarea></div>`;
     }else if(isNew){
       if(formMode==="processAdd"){
-        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div><div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`;
+        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" autocomplete="new-password" data-lpignore="true" data-form-type="other" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" autocomplete="new-password" data-lpignore="true" data-form-type="other" value="${esc(form.dueDate)}"></div><div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other">${escapeHtml(form.special)}</textarea></div>`;
       }else{
-        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div><div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">전달사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
+        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" autocomplete="new-password" data-lpignore="true" data-form-type="other" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" autocomplete="new-password" data-lpignore="true" data-form-type="other" value="${esc(form.dueDate)}"></div><div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">전달사항</div><textarea id="memo" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other">${escapeHtml(form.memo)}</textarea></div>`;
       }
     }else{
-      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${unassignedEdit?`<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div>`:""}${assignedEdit?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`:`<div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`}`;
+      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" autocomplete="new-password" data-lpignore="true" data-form-type="other" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" autocomplete="new-password" data-lpignore="true" data-form-type="other" value="${esc(form.dueDate)}"></div>${unassignedEdit?`<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div>`:""}${assignedEdit?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other">${escapeHtml(form.special)}</textarea></div>`:`<div class="field"><div class="field-title">특이사항</div><textarea id="special" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other">${escapeHtml(form.special)}</textarea></div>`}`;
     }
     root.innerHTML=`<div class="topbar single"><button onclick="goBack()">← 뒤로가기</button></div><div class="page-title">${titleText()}</div><div class="form">${formHtml}<button class="save" onclick="saveCar()">저장하기</button></div>`;
+    disableAutocompleteAll();
     return;
   }
   const list=currentCars();
   const dateLabel=screen==="completed"?"출고완료일자 필터":"출고예정일자 필터";
-  const filterHtml=screen==="unassigned"?"":`<div class="filter"><div class="filter-title">${dateLabel}</div><div class="filter-row"><input type="date" value="${esc(dueFilter)}" onchange="setFilterDate(this.value)"><button class="filter-clear" onclick="clearFilter()">필터해제</button></div></div>`;
+  const filterHtml=screen==="unassigned"?"":`<div class="filter"><div class="filter-title">${dateLabel}</div><div class="filter-row"><input type="date" autocomplete="new-password" data-lpignore="true" data-form-type="other" value="${esc(dueFilter)}" onchange="setFilterDate(this.value)"><button class="filter-clear" onclick="clearFilter()">필터해제</button></div></div>`;
   const topbarHtml=screen==="completed"?`<div class="topbar single"><button onclick="goBack()">← 뒤로가기</button></div>`:`<div class="topbar"><button onclick="goBack()">← 뒤로가기</button><button class="add" onclick="${screen==="unassigned"?"openUnassignedAdd()":"openAdd()"}"><span class="circle-plus" style="width:19px;height:19px;font-size:13px;margin-right:5px;">+</span> 추가</button></div>`;
   root.innerHTML=`${topbarHtml}<div class="page-title">${titleText()}</div>${filterHtml}${list.length===0?`<div class="empty">등록된 차량이 없습니다.</div>`:list.map(carCard).join("")}`
+  disableAutocompleteAll();
 }
 function setSearchQuery(v){searchQuery=v;renderLookupResults()}
 function renderLookupResults(){
@@ -992,7 +1027,7 @@ function processClass(v){
  if(p==="세차완료") return "wash";
  return "";
 }
-function fieldInput(label,id,value){return`<div class="field"><div class="field-title">${label}</div><input id="${id}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="${esc(value)}"></div>`}
+function fieldInput(label,id,value){return`<div class="field"><div class="field-title">${label}</div><input id="${id}" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-form-type="other" value="${esc(value)}"></div>`}
 function carCard(c){
   const completed=isCompleted(c);
   const unassigned=isUnassigned(c);
