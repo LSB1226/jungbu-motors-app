@@ -969,6 +969,33 @@
       line-height:1.25;
       letter-spacing:-.25px;
     }
+
+    /* customer phone split input */
+    .phone-row{
+      display:grid;
+      grid-template-columns:.56fr 1fr 1fr;
+      gap:8px;
+      align-items:center;
+    }
+    .phone-prefix{
+      height:48px;
+      border-radius:15px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(15,23,42,.74);
+      border:1px solid rgba(255,255,255,.09);
+      color:#f8fafc;
+      font-size:16px;
+      font-weight:950;
+      letter-spacing:.2px;
+    }
+    .phone-row input{
+      text-align:center;
+      font-size:18px;
+      letter-spacing:1px;
+    }
+
     @media (max-width:390px){
       .car-map{height:424px;max-width:330px;}
       .car-body-shape{width:202px;height:350px;}
@@ -977,6 +1004,33 @@
       .part-map-btn.front-bumper,.part-map-btn.rear-bumper{min-width:84px}
       .part-map-btn.side-step-left,.part-map-btn.side-step-right{min-width:69px;font-size:9.3px}
       .part-map-btn.suspension{width:190px;top:398px}
+    }
+
+
+    /* customer phone split input */
+    .phone-row{
+      display:grid;
+      grid-template-columns:.56fr 1fr 1fr;
+      gap:8px;
+      align-items:center;
+    }
+    .phone-prefix{
+      height:48px;
+      border-radius:15px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(15,23,42,.74);
+      border:1px solid rgba(255,255,255,.09);
+      color:#f8fafc;
+      font-size:16px;
+      font-weight:950;
+      letter-spacing:.2px;
+    }
+    .phone-row input{
+      text-align:center;
+      font-size:18px;
+      letter-spacing:1px;
     }
 
     @media (max-width:390px){
@@ -1039,13 +1093,36 @@ function openCompleted(){screen="completed";selectedOwner=null;dueFilter="";push
 function isCompleted(c){return c.completed===true || c.status==="출고완료"}
 function isUnassigned(c){return !isCompleted(c) && (c.assigned===false || !c.owner || c.owner==="미배정")}
 function isActiveAssigned(c){return !isCompleted(c) && !isUnassigned(c)}
-function syncForm(){["model","plate","intakeDate","dueDate","customerPhone","special","memo"].forEach(id=>{const el=document.getElementById(id);if(el)form[id]=el.value})}
+function syncForm(){
+  ["model","plate","intakeDate","dueDate","special","memo"].forEach(id=>{const el=document.getElementById(id);if(el)form[id]=el.value});
+  const p2=document.getElementById("customerPhone2");
+  const p3=document.getElementById("customerPhone3");
+  if(p2||p3){
+    const a=(p2?p2.value:"").replace(/\D/g,"").slice(0,4);
+    const b=(p3?p3.value:"").replace(/\D/g,"").slice(0,4);
+    form.customerPhone=(a||b)?`010-${a}${b?`-${b}`:""}`:"";
+  }
+}
 function setChoice(k,v){syncForm();form[k]=v;render()}
 function normalizeParts(v){
   let arr=Array.isArray(v)?v:(typeof v==="string"&&v.trim()?v.split(",").map(x=>x.trim()).filter(Boolean):[]);
   return arr.map(x=>x==="사이드스텝"?"사이드스텝(좌)":x).filter(Boolean);
 }
 function togglePart(v){syncForm();form.accidentParts=normalizeParts(form.accidentParts);form.accidentParts=form.accidentParts.includes(v)?form.accidentParts.filter(x=>x!==v):[...form.accidentParts,v];render()}
+function phoneParts(v){
+  const digits=String(v||"").replace(/\D/g,"");
+  let rest=digits.startsWith("010")?digits.slice(3):digits;
+  return [rest.slice(0,4),rest.slice(4,8)];
+}
+function customerPhoneField(){
+  const [a,b]=phoneParts(form.customerPhone);
+  return `<div class="field"><div class="field-title">고객 연락처</div><div class="phone-row"><div class="phone-prefix">010-</div><input id="customerPhone2" inputmode="numeric" maxlength="4" placeholder="0000" value="${esc(a)}" oninput="phoneMove(this,'customerPhone3')"><input id="customerPhone3" inputmode="numeric" maxlength="4" placeholder="0000" value="${esc(b)}" oninput="phoneMove(this)"></div></div>`;
+}
+function phoneMove(el,nextId){
+  el.value=el.value.replace(/\D/g,"").slice(0,4);
+  syncForm();
+  if(nextId && el.value.length>=4){const next=document.getElementById(nextId);if(next)next.focus();}
+}
 function accidentBtn(label,cls){const active=normalizeParts(form.accidentParts).includes(label)?"active":"";return`<button type="button" class="part-map-btn ${cls} ${active}" onclick="togglePart('${label}')">${label}</button>`}
 function accidentPartField(){const selected=partsHtml(form.accidentParts)||"<span style='color:#94a3b8;font-size:12px;font-weight:900;'>선택된 사고부위 없음</span>";return`<div class="field"><div class="field-title">사고부위</div><div class="car-map-wrap"><div class="car-map"><div class="car-body-shape"></div><div class="car-hood-line"></div><div class="car-trunk-line"></div><div class="car-left-wheel"></div><div class="car-right-wheel"></div>${accidentBtn("프론트범퍼","front-bumper")}${accidentBtn("후드","hood")}${accidentBtn("프론트펜더(좌)","front-fender-left")}${accidentBtn("프론트펜더(우)","front-fender-right")}${accidentBtn("프론트도어(좌)","front-door-left")}${accidentBtn("프론트도어(우)","front-door-right")}${accidentBtn("사이드스텝(좌)","side-step-left")}${accidentBtn("사이드스텝(우)","side-step-right")}${accidentBtn("리어도어(좌)","rear-door-left")}${accidentBtn("리어도어(우)","rear-door-right")}${accidentBtn("리어펜더(좌)","rear-fender-left")}${accidentBtn("리어펜더(우)","rear-fender-right")}${accidentBtn("트렁크","trunk")}${accidentBtn("리어범퍼","rear-bumper")}${accidentBtn("루프","roof")}${accidentBtn("프론트필러","pillar front-pillar")}${accidentBtn("센터필러","pillar center-pillar")}${accidentBtn("리어필러","pillar rear-pillar")}${accidentBtn("서스펜션","suspension")}</div><div class="part-map-selected"><div class="part-map-selected-title">선택된 사고부위</div>${selected}</div></div></div>`}
 function openEdit(id){rememberReturn();const c=cars.find(x=>x.id===id);if(!c)return;formMode=isUnassigned(c)?"unassignedEdit":"assignedEdit";form={model:c.model||"",plate:c.plate||"",alignment:c.alignment||"없음",intakeDate:c.intakeDate||"",dueDate:c.dueDate||"",customerPhone:c.customerPhone||"",owner:c.owner||"",process:convertOldProcess(c.process||""),accidentParts:normalizeParts(c.accidentParts),special:c.special||"",memo:c.memo||""};editId=id;screen="form";closeModal();pushState();render();forceTop()}
@@ -1153,12 +1230,12 @@ function render(){
       formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div>`;
     }else if(isNew){
       if(formMode==="processAdd"){
-        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div><div class="field"><div class="field-title">고객 연락처</div><input id="customerPhone" inputmode="tel" value="${esc(form.customerPhone)}"></div><div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`;
+        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div><div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`;
       }else{
-        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div><div class="field"><div class="field-title">고객 연락처</div><input id="customerPhone" inputmode="tel" value="${esc(form.customerPhone)}"></div><div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
+        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div><div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
       }
     }else{
-      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${assignedEdit?`<div class="field"><div class="field-title">고객 연락처</div><input id="customerPhone" inputmode="tel" value="${esc(form.customerPhone)}"></div>`:""}${unassignedEdit?`<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`:""}${assignedEdit?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div>${accidentPartField()}<div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`:`""`}`;
+      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${assignedEdit?customerPhoneField():""}${unassignedEdit?`<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`:""}${assignedEdit?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div>${accidentPartField()}<div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`:`""`}`;
     }
     root.innerHTML=`<div class="topbar single"><button onclick="goBack()">← 뒤로가기</button></div><div class="page-title">${titleText()}</div><div class="form">${formHtml}<button class="save" onclick="saveCar()">저장하기</button></div>`;
     return;
