@@ -1041,6 +1041,57 @@
       .built-logo-text{font-size:43px;letter-spacing:-4.7px;transform:scaleX(1.07)}
     }
 
+
+    /* FINAL PATCH: 연락처 입력/담당자 검색/카드 정리/공정 강조 */
+    .phone-row{
+      grid-template-columns:.82fr 1fr 1fr !important;
+    }
+    .phone-prefix{
+      min-width:74px !important;
+      font-size:18px !important;
+      letter-spacing:.6px !important;
+    }
+    .list-search-box{
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:12px;
+      margin:0 0 13px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .list-search-title{
+      font-size:13px;
+      color:#cbd5e1;
+      font-weight:950;
+      margin-bottom:8px;
+    }
+    .list-search-box input{
+      height:47px;
+      font-size:16px;
+      font-weight:900;
+    }
+    .process{
+      font-size:17px !important;
+      padding:11px 15px !important;
+      border-radius:999px !important;
+      letter-spacing:-.5px !important;
+      min-width:96px;
+      text-align:center;
+      box-shadow:0 8px 18px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.13) !important;
+    }
+    .car-head{
+      align-items:center !important;
+    }
+    .info.phone-wide{
+      grid-column:1 / -1;
+      min-height:56px;
+      background:rgba(96,165,250,.075);
+      border-color:rgba(96,165,250,.15);
+    }
+    .info.special-normal .value{
+      line-height:1.35;
+    }
+
 </style>
 </head>
 <body>
@@ -1070,7 +1121,7 @@ const ALIGN=["휠/얼라이먼트","얼라이먼트","없음"];
 const PROCESS=["판금작업중","도장작업중","조립중","세차완료"];
 const ACCIDENT_PARTS=["프론트범퍼","후드","프론트펜더(좌)","프론트펜더(우)","프론트도어(좌)","프론트도어(우)","사이드스텝(좌)","사이드스텝(우)","리어도어(좌)","리어도어(우)","리어펜더(좌)","리어펜더(우)","리어범퍼","트렁크","루프","프론트필러","센터필러","리어필러","서스펜션"];
 let cars=[];
-let screen="home",selectedOwner=null,editId=null,dueFilter="",returnScreen="home",returnOwner=null,returnFilter="",modalOpen=false,afterSaveBackHome=false,pendingTopScroll=false,searchQuery="",formMode="assigned";
+let screen="home",selectedOwner=null,editId=null,dueFilter="",returnScreen="home",returnOwner=null,returnFilter="",modalOpen=false,afterSaveBackHome=false,pendingTopScroll=false,searchQuery="",listSearchQuery="",formMode="assigned";
 let form=emptyForm();
 
 function emptyForm(){return{model:"",plate:"",alignment:"없음",intakeDate:"",dueDate:"",customerPhone:"",owner:"권태훈",process:"판금작업중",accidentParts:[],special:"",memo:""}}
@@ -1082,14 +1133,14 @@ function pushState(){history.pushState({screen,selectedOwner,editId,dueFilter},"
 function rememberReturn(){returnScreen=screen;returnOwner=selectedOwner;returnFilter=dueFilter}
 function closeModal(){document.getElementById("modalWrap").style.display="none";modalOpen=false}
 function forceTop(){window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0}
-function goHome(push=true){screen="home";selectedOwner=null;editId=null;dueFilter="";closeModal();if(push)pushState();render();forceTop()}
+function goHome(push=true){screen="home";selectedOwner=null;editId=null;dueFilter="";listSearchQuery="";closeModal();if(push)pushState();render();forceTop()}
 function goBack(){history.back()}
 function openAdd(){rememberReturn();form=emptyForm();editId=null;if(screen==="all"||screen==="owner"){formMode="processAdd";if(screen==="owner"&&selectedOwner){form.owner=selectedOwner}}else{formMode="assigned"}screen="form";pushState();render();forceTop()}
 function openUnassignedAdd(){rememberReturn();form=emptyForm();form.owner="";form.process="";form.dueDate="";form.memo="";editId=null;formMode="unassigned";screen="form";pushState();render();forceTop()}
-function openAll(){screen="all";selectedOwner=null;dueFilter="";pushState();render();forceTop()}
-function openOwner(n){screen="owner";selectedOwner=n;dueFilter="";pushState();render();forceTop()}
-function openUnassigned(){screen="unassigned";selectedOwner=null;dueFilter="";pushState();render();forceTop()}
-function openCompleted(){screen="completed";selectedOwner=null;dueFilter="";pushState();render();forceTop()}
+function openAll(){screen="all";selectedOwner=null;dueFilter="";listSearchQuery="";pushState();render();forceTop()}
+function openOwner(n){screen="owner";selectedOwner=n;dueFilter="";listSearchQuery="";pushState();render();forceTop()}
+function openUnassigned(){screen="unassigned";selectedOwner=null;dueFilter="";listSearchQuery="";pushState();render();forceTop()}
+function openCompleted(){screen="completed";selectedOwner=null;dueFilter="";listSearchQuery="";pushState();render();forceTop()}
 function isCompleted(c){return c.completed===true || c.status==="출고완료"}
 function isUnassigned(c){return !isCompleted(c) && (c.assigned===false || !c.owner || c.owner==="미배정")}
 function isActiveAssigned(c){return !isCompleted(c) && !isUnassigned(c)}
@@ -1116,7 +1167,7 @@ function phoneParts(v){
 }
 function customerPhoneField(){
   const [a,b]=phoneParts(form.customerPhone);
-  return `<div class="field"><div class="field-title">고객 연락처</div><div class="phone-row"><div class="phone-prefix">010-</div><input id="customerPhone2" inputmode="numeric" maxlength="4" placeholder="0000" value="${esc(a)}" oninput="phoneMove(this,'customerPhone3')"><input id="customerPhone3" inputmode="numeric" maxlength="4" placeholder="0000" value="${esc(b)}" oninput="phoneMove(this)"></div></div>`;
+  return `<div class="field"><div class="field-title">고객 연락처</div><div class="phone-row"><div class="phone-prefix">010</div><input id="customerPhone2" inputmode="numeric" maxlength="4" placeholder="0000" value="${esc(a)}" oninput="phoneMove(this,'customerPhone3')"><input id="customerPhone3" inputmode="numeric" maxlength="4" placeholder="0000" value="${esc(b)}" oninput="phoneMove(this)"></div></div>`;
 }
 function phoneMove(el,nextId){
   el.value=el.value.replace(/\D/g,"").slice(0,4);
@@ -1207,7 +1258,15 @@ function unassignedCars(){return cars.filter(isUnassigned)}
 function completedCars(){return cars.filter(isCompleted)}
 function countByOwner(n){return activeCars().filter(c=>c.owner===n).length}
 function baseCars(){if(screen==="all")return activeCars();if(screen==="owner")return activeCars().filter(c=>c.owner===selectedOwner);if(screen==="unassigned")return unassignedCars();if(screen==="completed")return completedCars();return[]}
-function currentCars(){let l=baseCars();if(dueFilter)l=l.filter(c=>isCompleted(c)?(c.completedAt===dueFilter):(c.dueDate===dueFilter));return l}
+function currentCars(){
+  let l=baseCars();
+  if(dueFilter)l=l.filter(c=>isCompleted(c)?(c.completedAt===dueFilter):(c.dueDate===dueFilter));
+  const q=(listSearchQuery||"").trim().toLowerCase();
+  if(q && (screen==="all"||screen==="owner")){
+    l=l.filter(c=>`${c.model||""} ${c.plate||""} ${c.customerPhone||""} ${c.owner||""}`.toLowerCase().includes(q));
+  }
+  return l;
+}
 function setFilterDate(v){dueFilter=v;render()}function clearFilter(){dueFilter="";render()}
 function titleText(){if(screen==="all")return"전체입고차량";if(screen==="owner")return selectedOwner;if(screen==="unassigned")return`미배정 차량 <span class="title-count">${unassignedCars().length}대</span>`;if(screen==="completed")return"출고완료차량";if(screen==="form"){if(!editId)return formMode==="unassigned"?"미배정 차량 등록":(formMode==="processAdd"?"차량추가":"담당자 배정");const c=cars.find(x=>x.id===editId);if(isUnassigned(c||{}))return"배정";return"상태변경";}return""}
 function logoHeader(){return`<div class="home-top"><div class="logo-wrap"><div class="grade"><div class="one">1</div><div class="txt">급</div></div><div class="logo-text">중부모터스</div></div><button class="assign-btn" onclick="openAdd()"><span class="circle-plus">+</span> 담당자 배정</button></div><div class="lookup-box"><span class="lookup-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.6" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15 15l4.2 4.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></span><div class="lookup-title">차량조회</div><input id="vehicleSearch" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="차량조회" oninput="setSearchQuery(this.value)"><div id="lookupResults" class="lookup-results"></div></div><button class="unassigned-bar" onclick="openUnassigned()"><span class="unassigned-left"><span class="unassigned-mark">!</span> 미배정 차량 <b>${unassignedCars().length}</b>대</span><span class="unassigned-arrow">›</span></button><div class="head-row"><div class="section-title">입고 현황</div></div>`}
@@ -1244,8 +1303,13 @@ function render(){
   const dateLabel=screen==="completed"?"출고완료일자 필터":"출고예정일자 필터";
   const filterHtml=screen==="unassigned"?"":`<div class="filter"><div class="filter-title">${dateLabel}</div><div class="filter-row"><input type="date" value="${esc(dueFilter)}" onchange="setFilterDate(this.value)"><button class="filter-clear" onclick="clearFilter()">필터해제</button></div></div>`;
   const topbarHtml=screen==="completed"?`<div class="topbar"><button onclick="goBack()">← 뒤로가기</button><button class="add" onclick="deleteAllCompleted()">전체삭제</button></div>`:`<div class="topbar"><button onclick="goBack()">← 뒤로가기</button><button class="add" onclick="${screen==="unassigned"?"openUnassignedAdd()":"openAdd()"}"><span class="circle-plus" style="width:19px;height:19px;font-size:13px;margin-right:5px;">+</span> 추가</button></div>`;
-  root.innerHTML=`${topbarHtml}<div class="page-title">${titleText()}</div>${filterHtml}${list.length===0?`<div class="empty">등록된 차량이 없습니다.</div>`:list.map(carCard).join("")}`
+  root.innerHTML=`${topbarHtml}<div class="page-title">${titleText()}</div>${filterHtml}${listSearchHtml()}${list.length===0?`<div class="empty">등록된 차량이 없습니다.</div>`:list.map(carCard).join("")}`
 }
+function listSearchHtml(){
+  if(!(screen==="all"||screen==="owner"))return "";
+  return `<div class="list-search-box"><div class="list-search-title">차량조회</div><input id="listVehicleSearch" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="차량번호 또는 고객연락처 입력" value="${esc(listSearchQuery)}" oninput="setListSearchQuery(this.value)"></div>`;
+}
+function setListSearchQuery(v){listSearchQuery=v;render()}
 function setSearchQuery(v){searchQuery=v;renderLookupResults()}
 
 function disableAutoComplete(){
@@ -1263,7 +1327,7 @@ function renderLookupResults(){
   if(!box)return;
   const q=(searchQuery||"").trim().toLowerCase();
   if(!q){box.innerHTML="";return}
-  const result=cars.filter(c=>`${c.model||""} ${c.plate||""} ${c.owner||""}`.toLowerCase().includes(q)).slice(0,12);
+  const result=cars.filter(c=>`${c.model||""} ${c.plate||""} ${c.customerPhone||""} ${c.owner||""}`.toLowerCase().includes(q)).slice(0,12);
   box.innerHTML=result.length?result.map(c=>`<button class="lookup-item" onclick="openDetail('${c.id}')"><div class="lookup-main"><div class="lookup-model">${escapeHtml(c.model||"-")}</div><div class="lookup-plate">${escapeHtml(c.plate||"-")}</div></div><div class="lookup-tag">${lookupStatus(c)}</div></button>`).join(""):`<div class="empty" style="padding:16px;margin-top:8px;">조회 결과가 없습니다.</div>`;
 }
 function lookupStatus(c){if(isCompleted(c))return"출고완료";if(isUnassigned(c))return"미배정";return c.owner||"-"}
@@ -1297,8 +1361,9 @@ function carCard(c){
   const gridCols=completed?"":((unassigned||screen==="unassigned")?` style="grid-template-columns:1fr 1fr;"`:` style="grid-template-columns:repeat(4,1fr);"`);
   const processHtml=(completed||unassigned)?"":`<span class="process ${processClass(c.process)}">${escapeHtml(convertOldProcess(c.process||""))}</span>`;
   const accidentBlock=info("사고부위",partsHtml(c.accidentParts)||"없음","wide");
-  const phoneBlock=c.customerPhone?info("고객 연락처",c.customerPhone):"";
-  const infoHtml=unassigned&&!completed?`${info("담당자","미배정")}`:`${info("담당자",unassigned?"미배정":c.owner)}${info("휠 얼라이먼트",c.alignment)}${info("입고일자",c.intakeDate||"미정")}${dateInfo}${phoneBlock}${accidentBlock}${memoBlock}`;
+  const specialBlock=c.special?info("특이사항",c.special,"special-normal"):"";
+  const phoneBlock=(c.customerPhone||!specialBlock)?info("고객 연락처",c.customerPhone||"미입력",specialBlock?"":"phone-wide"):"";
+  const infoHtml=unassigned&&!completed?`${info("담당자","미배정")}`:`${info("담당자",unassigned?"미배정":c.owner)}${info("휠 얼라이먼트",c.alignment)}${info("입고일자",c.intakeDate||"미정")}${dateInfo}${phoneBlock}${specialBlock}${accidentBlock}${memoBlock}`;
   return`<div class="car-card"><div class="car-head"><div><div class="model">${escapeHtml(c.model)}</div><div class="plate">${escapeHtml(c.plate)}</div></div>${processHtml}</div><div class="info-grid">${infoHtml}</div><div class="updated">최근수정 ${escapeHtml(c.updatedAt||"-")}</div><div class="btn-row"${gridCols}>${buttons}</div></div>`
 }
 function partsHtml(v){const arr=normalizeParts(v);return arr.length?`<div class="part-list">${arr.map(x=>`<span class="part-badge">${escapeHtml(x)}</span>`).join("")}</div>`:""}
