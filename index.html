@@ -820,26 +820,103 @@
     }
 
 
-    /* 사고부위 복수선택 + 작게 표시 */
-    .part-choice{
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:8px;
+    /* 사고부위 자동차 모형 선택 + 작게 표시 */
+    .car-map-wrap{
+      border-radius:20px;
+      padding:14px 10px 12px;
+      background:linear-gradient(135deg,rgba(15,23,42,.78),rgba(2,6,23,.62));
+      border:1px solid rgba(148,163,184,.14);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
     }
-    .part-choice button{
-      border-radius:14px;
-      padding:11px 5px;
-      min-height:42px;
+    .car-map-guide{
+      color:#94a3b8;
+      font-size:12px;
+      font-weight:900;
+      margin:0 0 10px 3px;
+    }
+    .car-map{
+      position:relative;
+      width:100%;
+      height:460px;
+      max-width:390px;
+      margin:0 auto;
+    }
+    .car-body-shape{
+      position:absolute;
+      left:50%;
+      top:24px;
+      transform:translateX(-50%);
+      width:176px;
+      height:410px;
+      border-radius:74px 74px 46px 46px;
+      background:
+        linear-gradient(180deg,rgba(96,165,250,.20),rgba(15,23,42,.72)),
+        linear-gradient(90deg,rgba(255,255,255,.08),transparent 24%,transparent 76%,rgba(255,255,255,.08));
+      border:2px solid rgba(148,163,184,.28);
+      box-shadow:inset 0 0 42px rgba(96,165,250,.10),0 16px 28px rgba(0,0,0,.28);
+      pointer-events:none;
+    }
+    .car-body-shape:before{
+      content:"";
+      position:absolute;
+      left:28px;
+      right:28px;
+      top:94px;
+      height:88px;
+      border-radius:35px 35px 18px 18px;
+      background:rgba(15,23,42,.62);
+      border:1px solid rgba(148,163,184,.22);
+      box-shadow:inset 0 0 18px rgba(255,255,255,.035);
+    }
+    .car-body-shape:after{
+      content:"";
+      position:absolute;
+      left:31px;
+      right:31px;
+      bottom:77px;
+      height:70px;
+      border-radius:20px 20px 30px 30px;
+      background:rgba(15,23,42,.48);
+      border:1px solid rgba(148,163,184,.18);
+    }
+    .part-map-btn{
+      position:absolute;
+      min-width:74px;
+      min-height:31px;
+      border-radius:999px;
+      padding:6px 8px;
       background:rgba(255,255,255,.08);
       color:#dbeafe;
-      border:1px solid rgba(255,255,255,.08);
-      font-size:13px;
+      border:1px solid rgba(255,255,255,.12);
+      font-size:11.5px;
       font-weight:950;
-      letter-spacing:-.3px;
+      letter-spacing:-.5px;
+      box-shadow:0 7px 13px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.04);
+      z-index:2;
+      white-space:nowrap;
     }
-    .part-choice button.active{
-      background:#e5e7eb;
+    .part-map-btn.active{
+      background:linear-gradient(135deg,#f8fafc,#cbd5e1);
       color:#0f172a;
+      border-color:rgba(255,255,255,.62);
+      box-shadow:0 0 0 2px rgba(246,212,125,.22),0 8px 16px rgba(0,0,0,.24);
+    }
+    .part-map-btn.center{left:50%;transform:translateX(-50%);}
+    .part-map-btn.left{left:0;}
+    .part-map-btn.right{right:0;}
+    .part-map-btn.small{min-width:60px;font-size:11px;padding-left:6px;padding-right:6px;}
+    .part-map-selected{
+      margin-top:12px;
+      padding:10px;
+      border-radius:15px;
+      background:rgba(255,255,255,.055);
+      border:1px solid rgba(255,255,255,.07);
+    }
+    .part-map-selected-title{
+      color:#94a3b8;
+      font-size:12px;
+      font-weight:950;
+      margin-bottom:6px;
     }
     .part-list{
       display:flex;
@@ -860,6 +937,12 @@
       font-weight:950;
       line-height:1.25;
       letter-spacing:-.25px;
+    }
+    @media (max-width:390px){
+      .car-map{height:448px;max-width:354px;}
+      .car-body-shape{width:158px;height:398px;}
+      .part-map-btn{min-width:65px;font-size:10.5px;padding:6px 6px;}
+      .part-map-btn.small{min-width:54px;font-size:10px;}
     }
 
 
@@ -927,7 +1010,8 @@ function syncForm(){["model","plate","intakeDate","dueDate","special","memo"].fo
 function setChoice(k,v){syncForm();form[k]=v;render()}
 function normalizeParts(v){if(Array.isArray(v))return v;if(typeof v==="string"&&v.trim())return v.split(",").map(x=>x.trim()).filter(Boolean);return[]}
 function togglePart(v){syncForm();form.accidentParts=normalizeParts(form.accidentParts);form.accidentParts=form.accidentParts.includes(v)?form.accidentParts.filter(x=>x!==v):[...form.accidentParts,v];render()}
-function accidentPartField(){return`<div class="field"><div class="field-title">사고부위</div><div class="part-choice">${ACCIDENT_PARTS.map(v=>`<button class="${normalizeParts(form.accidentParts).includes(v)?"active":""}" onclick="togglePart('${v}')">${v}</button>`).join("")}</div></div>`}
+function accidentBtn(label,cls,top){const active=normalizeParts(form.accidentParts).includes(label)?"active":"";return`<button type="button" class="part-map-btn ${cls} ${active}" style="top:${top}px" onclick="togglePart('${label}')">${label}</button>`}
+function accidentPartField(){const selected=partsHtml(form.accidentParts)||"<span style='color:#94a3b8;font-size:12px;font-weight:900;'>선택된 사고부위 없음</span>";return`<div class="field"><div class="field-title">사고부위</div><div class="car-map-wrap"><div class="car-map-guide">차량 모형에서 사고부위를 클릭하면 복수선택 됩니다.</div><div class="car-map"><div class="car-body-shape"></div>${accidentBtn("프론트범퍼","center",0)}${accidentBtn("후드","center",42)}${accidentBtn("프론트펜더(좌)","left",82)}${accidentBtn("프론트펜더(우)","right",82)}${accidentBtn("프론트필러","center small",92)}${accidentBtn("프론트도어(좌)","left",137)}${accidentBtn("프론트도어(우)","right",137)}${accidentBtn("센터필러","center small",160)}${accidentBtn("리어도어(좌)","left",198)}${accidentBtn("리어도어(우)","right",198)}${accidentBtn("리어필러","center small",232)}${accidentBtn("리어펜더(좌)","left",259)}${accidentBtn("리어펜더(우)","right",259)}${accidentBtn("사이드스텝","center",298)}${accidentBtn("트렁크","center",338)}${accidentBtn("리어범퍼","center",379)}${accidentBtn("루프","center small",203)}${accidentBtn("서스펜션","center",424)}</div><div class="part-map-selected"><div class="part-map-selected-title">선택된 사고부위</div>${selected}</div></div></div>`}
 function openEdit(id){rememberReturn();const c=cars.find(x=>x.id===id);if(!c)return;formMode=isUnassigned(c)?"unassignedEdit":"assignedEdit";form={model:c.model||"",plate:c.plate||"",alignment:c.alignment||"없음",intakeDate:c.intakeDate||"",dueDate:c.dueDate||"",owner:c.owner||"",process:convertOldProcess(c.process||""),accidentParts:normalizeParts(c.accidentParts),special:c.special||"",memo:c.memo||""};editId=id;screen="form";closeModal();pushState();render();forceTop()}
 function restoreReturn(){
   if(returnScreen==="unassigned" && form.owner && form.owner!=="미배정"){
@@ -998,7 +1082,9 @@ async function deleteAllCompleted(){
   closeModal();
 }
 async function deleteUnassigned(id){
-  if(!confirm("미배정 차량을 삭제할까요?"))return;
+  const c=cars.find(x=>x.id===id);
+  const msg=isUnassigned(c||{})?"미배정 차량을 삭제할까요?":"배정된 차량을 삭제할까요?";
+  if(!confirm(msg))return;
   await carsRef.doc(String(id)).delete();
   closeModal();
 }
@@ -1035,7 +1121,7 @@ function render(){
         formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div><div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
       }
     }else{
-      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${assignedEdit?accidentPartField():""}${unassignedEdit?`<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`:""}${assignedEdit?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`:`""`}`;
+      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${unassignedEdit?`<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`:""}${assignedEdit?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div>${accidentPartField()}<div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`:`""`}`;
     }
     root.innerHTML=`<div class="topbar single"><button onclick="goBack()">← 뒤로가기</button></div><div class="page-title">${titleText()}</div><div class="form">${formHtml}<button class="save" onclick="saveCar()">저장하기</button></div>`;
     return;
