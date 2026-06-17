@@ -1640,9 +1640,9 @@ function carCard(c){
   }else if(screen==="owner"){
     buttons=`<button class="action dark" onclick="openEdit('${c.id}')">상태변경</button><button class="action complete" onclick="completeCar('${c.id}')">출고완료</button><button class="action delete" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
   }else{
-    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">상태변경</button><button class="action view" onclick="openDetail('${c.id}')">상세보기</button><button class="action complete" onclick="completeCar('${c.id}')">출고완료</button><button class="action delete" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
+    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">상태변경</button><button class="action complete" onclick="completeCar('${c.id}')">출고완료</button><button class="action delete" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
   }
-  const gridCols=completed?"":((unassigned||screen==="unassigned")?` style="grid-template-columns:1fr 1fr;"`:(screen==="owner"?` style="grid-template-columns:repeat(3,1fr);"`:` style="grid-template-columns:repeat(4,1fr);"`));
+  const gridCols=completed?"":((unassigned||screen==="unassigned")?` style="grid-template-columns:1fr 1fr;"`:` style="grid-template-columns:repeat(3,1fr);"`));
   const processHtml=(completed||unassigned)?"":`<span class="process ${processClass(c.process)}">${escapeHtml(convertOldProcess(c.process||""))}</span>`;
   const accidentBlock=info("사고부위",partsHtml(c.accidentParts)||"없음","wide");
   const specialBlock=c.special?info("특이사항",c.special,"wide special-normal"):"";
