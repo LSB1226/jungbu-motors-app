@@ -1241,6 +1241,132 @@
       .action{font-size:12px !important;padding:8px 2px !important;}
     }
 
+
+    /* COMPLETE FINAL PATCH: 상태변경 화면만 보기 좋게 축소 */
+    .form.status-compact{
+      padding:13px !important;
+      border-radius:20px !important;
+    }
+    .form.status-compact .field{
+      margin-bottom:10px !important;
+    }
+    .form.status-compact .field-title{
+      margin-bottom:6px !important;
+      font-size:13px !important;
+    }
+    .form.status-compact input{
+      height:43px !important;
+      padding:10px 11px !important;
+      font-size:15px !important;
+      border-radius:13px !important;
+    }
+    .form.status-compact textarea{
+      min-height:70px !important;
+      padding:10px 11px !important;
+      font-size:14px !important;
+      border-radius:13px !important;
+      line-height:1.35 !important;
+    }
+    .form.status-compact .choice{
+      gap:6px !important;
+    }
+    .form.status-compact .choice button{
+      min-height:40px !important;
+      padding:9px 5px !important;
+      font-size:13px !important;
+      border-radius:13px !important;
+    }
+    .form.status-compact .process-choice button{
+      min-height:42px !important;
+      font-size:13px !important;
+      letter-spacing:-.4px !important;
+    }
+    .form.status-compact .phone-row{
+      gap:6px !important;
+    }
+    .form.status-compact .phone-prefix{
+      height:43px !important;
+      min-width:66px !important;
+      font-size:16px !important;
+      border-radius:13px !important;
+    }
+    .form.status-compact .phone-row input{
+      height:43px !important;
+      font-size:16px !important;
+    }
+    .form.status-compact .car-map-wrap{
+      padding:10px 8px 9px !important;
+      border-radius:17px !important;
+    }
+    .form.status-compact .car-map{
+      height:366px !important;
+      max-width:310px !important;
+      transform:scale(.88);
+      transform-origin:top center;
+      margin-bottom:-42px !important;
+    }
+    .form.status-compact .part-map-selected{
+      margin-top:6px !important;
+      padding:8px !important;
+      border-radius:13px !important;
+    }
+    .form.status-compact .part-map-selected-title{
+      margin-bottom:5px !important;
+      font-size:11px !important;
+    }
+    .form.status-compact .part-badge{
+      font-size:10.5px !important;
+      padding:3px 6px !important;
+    }
+    .form.status-compact .save{
+      padding:13px !important;
+      font-size:16px !important;
+      border-radius:15px !important;
+      margin-top:2px !important;
+    }
+
+
+    /* REAL FINAL PATCH: 담당자 화면 상세보기 제거 유지 + 상태변경 사고부위 선택만 확대 */
+    .form.status-compact .car-map-wrap{
+      padding:12px 10px 11px !important;
+      border-radius:18px !important;
+    }
+    .form.status-compact .car-map{
+      height:430px !important;
+      max-width:360px !important;
+      transform:scale(1) !important;
+      transform-origin:top center !important;
+      margin-bottom:0 !important;
+    }
+    .form.status-compact .part-map-btn{
+      min-height:30px !important;
+      padding:6px 8px !important;
+      font-size:11.5px !important;
+      line-height:1.1 !important;
+    }
+    .form.status-compact .part-map-btn.front-bumper,
+    .form.status-compact .part-map-btn.rear-bumper{
+      min-width:98px !important;
+    }
+    .form.status-compact .part-map-btn.hood,
+    .form.status-compact .part-map-btn.trunk{
+      min-width:86px !important;
+    }
+    .form.status-compact .part-map-btn.side-step-left,
+    .form.status-compact .part-map-btn.side-step-right{
+      min-width:82px !important;
+      font-size:10.8px !important;
+    }
+    .form.status-compact .part-map-btn.pillar{
+      min-width:52px !important;
+      font-size:10px !important;
+    }
+    .form.status-compact .part-map-btn.suspension{
+      width:222px !important;
+      font-size:11.3px !important;
+    }
+
+
 </style>
 </head>
 <body>
@@ -1445,7 +1571,7 @@ function render(){
     }else{
       formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">휠 얼라이먼트</div><div class="choice">${ALIGN.map(v=>`<button class="${form.alignment===v?"active":""}" onclick="setChoice('alignment','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${assignedEdit?customerPhoneField():""}${unassignedEdit?`<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`:""}${assignedEdit?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div>${accidentPartField()}<div class="field"><div class="field-title">담당자 메모</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">특이사항</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`:`""`}`;
     }
-    root.innerHTML=`<div class="topbar single"><button onclick="goBack()">← 뒤로가기</button></div><div class="page-title">${titleText()}</div><div class="form">${formHtml}<button class="save" onclick="saveCar()">저장하기</button></div>`;
+    root.innerHTML=`<div class="topbar single"><button onclick="goBack()">← 뒤로가기</button></div><div class="page-title">${titleText()}</div><div class="form ${assignedEdit?"status-compact":""}">${formHtml}<button class="save" onclick="saveCar()">저장하기</button></div>`;
     return;
   }
   const list=currentCars();
