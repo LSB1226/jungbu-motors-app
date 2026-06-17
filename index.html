@@ -1213,6 +1213,24 @@
       letter-spacing:-.35px !important;
     }
 
+
+    /* FINAL PATCH: 담당자 화면 상세보기 제거 + 출고/삭제 버튼 색상 분리 */
+    .action.complete{
+      background:linear-gradient(135deg,#14b8a6,#0f766e) !important;
+      color:#ecfeff !important;
+      box-shadow:0 8px 16px rgba(20,184,166,.20) !important;
+    }
+    .action.delete{
+      background:linear-gradient(135deg,#fb7185,#be123c) !important;
+      color:#fff1f2 !important;
+      box-shadow:0 8px 16px rgba(244,63,94,.22) !important;
+    }
+    .action.view{
+      background:linear-gradient(135deg,rgba(71,85,105,.95),rgba(30,41,59,.95)) !important;
+      color:#e2e8f0 !important;
+      border:1px solid rgba(148,163,184,.18) !important;
+    }
+
     @media (max-width:390px){
       .car-card{padding:11px 12px !important;}
       .model{font-size:22px !important;}
@@ -1490,13 +1508,15 @@ function carCard(c){
   const memoBlock=completed?info("담당자 메모",c.memo||"없음","wide"):info("담당자 메모",c.memo||"없음","wide");
   let buttons="";
   if(completed){
-    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action" onclick="openDetail('${c.id}')">상세보기</button><button class="action done" onclick="deleteCompleted('${c.id}')">삭제</button>`;
+    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action view" onclick="openDetail('${c.id}')">상세보기</button><button class="action delete" onclick="deleteCompleted('${c.id}')">삭제</button>`;
   }else if(unassigned || screen==="unassigned"){
-    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">배정</button><button class="action done" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
+    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">배정</button><button class="action delete" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
+  }else if(screen==="owner"){
+    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">상태변경</button><button class="action complete" onclick="completeCar('${c.id}')">출고완료</button><button class="action delete" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
   }else{
-    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">상태변경</button><button class="action" onclick="openDetail('${c.id}')">상세보기</button><button class="action done" onclick="completeCar('${c.id}')">출고완료</button><button class="action done" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
+    buttons=`<button class="action dark" onclick="openEdit('${c.id}')">상태변경</button><button class="action view" onclick="openDetail('${c.id}')">상세보기</button><button class="action complete" onclick="completeCar('${c.id}')">출고완료</button><button class="action delete" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
   }
-  const gridCols=completed?"":((unassigned||screen==="unassigned")?` style="grid-template-columns:1fr 1fr;"`:` style="grid-template-columns:repeat(4,1fr);"`);
+  const gridCols=completed?"":((unassigned||screen==="unassigned")?` style="grid-template-columns:1fr 1fr;"`:(screen==="owner"?` style="grid-template-columns:repeat(3,1fr);"`:` style="grid-template-columns:repeat(4,1fr);"`));
   const processHtml=(completed||unassigned)?"":`<span class="process ${processClass(c.process)}">${escapeHtml(convertOldProcess(c.process||""))}</span>`;
   const accidentBlock=info("사고부위",partsHtml(c.accidentParts)||"없음","wide");
   const specialBlock=c.special?info("특이사항",c.special,"wide special-normal"):"";
@@ -1517,11 +1537,11 @@ function openDetail(id){
   const detailInfo=unassigned&&!completed?`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자","미배정")}`:`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자",unassigned?"미배정":c.owner)}${processLine}${detail("휠 얼라이먼트",c.alignment)}${detail("입고일자",c.intakeDate||"미정")}${dateLine}${phoneDetail}${accidentDetail}${detail("담당자 메모",c.memo||"없음","wide")}${detail("특이사항",c.special||"없음","wide")}`;
   let btns="";
   if(completed){
-    btns=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action done" onclick="deleteCompleted('${c.id}')">삭제</button>`;
+    btns=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action delete" onclick="deleteCompleted('${c.id}')">삭제</button>`;
   }else if(unassigned){
-    btns=`<button class="action dark" onclick="openEdit('${c.id}')">배정</button><button class="action done" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
+    btns=`<button class="action dark" onclick="openEdit('${c.id}')">배정</button><button class="action delete" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
   }else{
-    btns=`<button class="action dark" onclick="openEdit('${c.id}')">상태변경</button><button class="action done" onclick="completeCar('${c.id}')">출고완료</button><button class="action done" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
+    btns=`<button class="action dark" onclick="openEdit('${c.id}')">상태변경</button><button class="action complete" onclick="completeCar('${c.id}')">출고완료</button><button class="action delete" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
   }
   document.getElementById("modal").innerHTML=`<div class="modal-title"><h2>상세보기</h2><button class="close" onclick="closeModal()">×</button></div><div class="detail-grid">${detailInfo}</div><div class="btn-row" style="grid-template-columns:repeat(3,1fr);">${btns}</div>`;
   document.getElementById("modalWrap").style.display="flex";
