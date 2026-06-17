@@ -1303,13 +1303,20 @@ function render(){
   const dateLabel=screen==="completed"?"출고완료일자 필터":"출고예정일자 필터";
   const filterHtml=screen==="unassigned"?"":`<div class="filter"><div class="filter-title">${dateLabel}</div><div class="filter-row"><input type="date" value="${esc(dueFilter)}" onchange="setFilterDate(this.value)"><button class="filter-clear" onclick="clearFilter()">필터해제</button></div></div>`;
   const topbarHtml=screen==="completed"?`<div class="topbar"><button onclick="goBack()">← 뒤로가기</button><button class="add" onclick="deleteAllCompleted()">전체삭제</button></div>`:`<div class="topbar"><button onclick="goBack()">← 뒤로가기</button><button class="add" onclick="${screen==="unassigned"?"openUnassignedAdd()":"openAdd()"}"><span class="circle-plus" style="width:19px;height:19px;font-size:13px;margin-right:5px;">+</span> 추가</button></div>`;
-  root.innerHTML=`${topbarHtml}<div class="page-title">${titleText()}</div>${filterHtml}${listSearchHtml()}${list.length===0?`<div class="empty">등록된 차량이 없습니다.</div>`:list.map(carCard).join("")}`
+  root.innerHTML=`${topbarHtml}<div class="page-title">${titleText()}</div>${filterHtml}${listSearchHtml()}<div id="listCards">${listCarsHtml(list)}</div>`
+}
+function listCarsHtml(list=currentCars()){
+  return list.length===0?`<div class="empty">등록된 차량이 없습니다.</div>`:list.map(carCard).join("");
+}
+function renderListCards(){
+  const box=document.getElementById("listCards");
+  if(box)box.innerHTML=listCarsHtml();
 }
 function listSearchHtml(){
   if(!(screen==="all"||screen==="owner"))return "";
-  return `<div class="list-search-box"><div class="list-search-title">차량조회</div><input id="listVehicleSearch" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="차량번호 또는 고객연락처 입력" value="${esc(listSearchQuery)}" oninput="setListSearchQuery(this.value)"></div>`;
+  return `<div class="lookup-box list-lookup-box"><span class="lookup-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.6" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="M15 15l4.2 4.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></span><div class="lookup-title">차량조회</div><input id="listVehicleSearch" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="차량조회" value="${esc(listSearchQuery)}" oninput="setListSearchQuery(this.value)"></div>`;
 }
-function setListSearchQuery(v){listSearchQuery=v;render()}
+function setListSearchQuery(v){listSearchQuery=v;renderListCards()}
 function setSearchQuery(v){searchQuery=v;renderLookupResults()}
 
 function disableAutoComplete(){
@@ -1361,9 +1368,9 @@ function carCard(c){
   const gridCols=completed?"":((unassigned||screen==="unassigned")?` style="grid-template-columns:1fr 1fr;"`:` style="grid-template-columns:repeat(4,1fr);"`);
   const processHtml=(completed||unassigned)?"":`<span class="process ${processClass(c.process)}">${escapeHtml(convertOldProcess(c.process||""))}</span>`;
   const accidentBlock=info("사고부위",partsHtml(c.accidentParts)||"없음","wide");
-  const specialBlock=c.special?info("특이사항",c.special,"special-normal"):"";
-  const phoneBlock=(c.customerPhone||!specialBlock)?info("고객 연락처",c.customerPhone||"미입력",specialBlock?"":"phone-wide"):"";
-  const infoHtml=unassigned&&!completed?`${info("담당자","미배정")}`:`${info("담당자",unassigned?"미배정":c.owner)}${info("휠 얼라이먼트",c.alignment)}${info("입고일자",c.intakeDate||"미정")}${dateInfo}${phoneBlock}${specialBlock}${accidentBlock}${memoBlock}`;
+  const specialBlock=c.special?info("특이사항",c.special,"wide special-normal"):"";
+  const phoneBlock=info("고객 연락처",c.customerPhone||"미입력","phone-wide");
+  const infoHtml=unassigned&&!completed?`${info("담당자","미배정")}`:`${info("담당자",unassigned?"미배정":c.owner)}${info("휠 얼라이먼트",c.alignment)}${info("입고일자",c.intakeDate||"미정")}${dateInfo}${phoneBlock}${accidentBlock}${memoBlock}${specialBlock}`;
   return`<div class="car-card"><div class="car-head"><div><div class="model">${escapeHtml(c.model)}</div><div class="plate">${escapeHtml(c.plate)}</div></div>${processHtml}</div><div class="info-grid">${infoHtml}</div><div class="updated">최근수정 ${escapeHtml(c.updatedAt||"-")}</div><div class="btn-row"${gridCols}>${buttons}</div></div>`
 }
 function partsHtml(v){const arr=normalizeParts(v);return arr.length?`<div class="part-list">${arr.map(x=>`<span class="part-badge">${escapeHtml(x)}</span>`).join("")}</div>`:""}
