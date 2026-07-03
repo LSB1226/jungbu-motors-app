@@ -1439,8 +1439,8 @@
     }
     .owner-clean-grid .info.insurance-compact{
       grid-column:auto !important;
-      background:rgba(96,165,250,.065) !important;
-      border-color:rgba(96,165,250,.13) !important;
+      background:rgba(255,255,255,.055) !important;
+      border-color:rgba(255,255,255,.06) !important;
     }
     .owner-clean-grid .info.insurance-compact .value{
       line-height:1.24 !important;
@@ -1456,6 +1456,23 @@
     @media (max-width:390px){
       .insurance-row{grid-template-columns:48px .72fr 1.28fr !important;}
       .owner-clean-grid .info.insurance-compact .value{font-size:12px !important;}
+    }
+
+    .insurance-mini-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:3px 7px;
+      border-radius:999px;
+      background:rgba(96,165,250,.15);
+      border:1px solid rgba(96,165,250,.22);
+      color:#dbeafe;
+      font-size:10px;
+      font-weight:950;
+      line-height:1.15;
+      letter-spacing:-.25px;
+      margin-right:5px;
+      vertical-align:1px;
     }
 
 </style>
@@ -1547,8 +1564,8 @@ function insuranceInfoHtml(c){
   const self=[c.selfInsurer||"",c.selfClaimNo||""].filter(Boolean).join(" / ");
   const third=[c.thirdInsurer||"",c.thirdClaimNo||""].filter(Boolean).join(" / ");
   const rows=[];
-  if(self) rows.push(`<div><b>자차</b> ${escapeHtml(self)}</div>`);
-  if(third) rows.push(`<div${rows.length?` style="margin-top:5px;"`:""}><b>대물</b> ${escapeHtml(third)}</div>`);
+  if(self) rows.push(`<div><span class="insurance-mini-badge">자차</span>${escapeHtml(self)}</div>`);
+  if(third) rows.push(`<div${rows.length?` style="margin-top:5px;"`:""}><span class="insurance-mini-badge">대물</span>${escapeHtml(third)}</div>`);
   return rows.join("");
 }
 function insuranceText(c){
@@ -1683,12 +1700,12 @@ function render(){
       formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div>`;
     }else if(isNew){
       if(formMode==="processAdd"){
-        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${customerPhoneField()}${insuranceField()}<div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특별지시사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
+        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${customerPhoneField()}${insuranceField()}<div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
       }else{
-        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${customerPhoneField()}${insuranceField()}<div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특별지시사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
+        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${customerPhoneField()}${insuranceField()}<div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
       }
     }else{
-      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${assignedEdit?customerPhoneField()+insuranceField():""}${unassignedEdit?`${customerPhoneField()}${insuranceField()}<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특별지시사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`:""}${assignedEdit?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div>${accidentPartField()}<div class="field"><div class="field-title">특별지시사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">비고</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`:`""`}`;
+      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${assignedEdit?customerPhoneField()+insuranceField():""}${unassignedEdit?`${customerPhoneField()}${insuranceField()}<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`:""}${assignedEdit?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div>${accidentPartField()}<div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">비고</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`:`""`}`;
     }
     root.innerHTML=`<div class="topbar single"><button onclick="goBack()">← 뒤로가기</button></div><div class="page-title">${titleText()}</div><div class="form ${assignedEdit?"status-compact":""}">${formHtml}<button class="save" onclick="saveCar()">저장하기</button></div>`;
     return;
@@ -1750,7 +1767,7 @@ function carCard(c){
   const completed=isCompleted(c);
   const unassigned=isUnassigned(c);
   const dateInfo=completed?info("출고완료일자",c.completedAt||"미정"):info("출고예정일자",c.dueDate||"미정");
-  const memoBlock=info("특별지시사항",c.memo||"","wide");
+  const memoBlock=info("특이사항",c.memo||"","wide");
   let buttons="";
   if(completed){
     buttons=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action view" onclick="openDetail('${c.id}')">상세보기</button><button class="action delete" onclick="deleteCompleted('${c.id}')">삭제</button>`;
@@ -1812,8 +1829,8 @@ function carCard(c){
       phoneBlock,
       insuranceBlock,
       accidentBlock,
-      specialBlock,
-      memoOnly
+      memoOnly,
+      specialBlock
     ]);
   }else{
     infoHtml=joinClean([
@@ -1825,8 +1842,8 @@ function carCard(c){
       phoneBlock,
       insuranceBlock,
       accidentBlock,
-      specialBlock,
-      memoOnly
+      memoOnly,
+      specialBlock
     ]);
   }
   return`<div class="car-card"><div class="car-head"><div><div class="model">${escapeHtml(c.model)}</div><div class="plate">${escapeHtml(c.plate)}</div></div>${processHtml}</div><div class="info-grid owner-clean-grid">${infoHtml}</div><div class="updated">최근수정 ${escapeHtml(c.updatedAt||"-")}</div><div class="btn-row"${gridCols}>${buttons}</div></div>`
@@ -1839,12 +1856,12 @@ function openDetail(id){
   const unassigned=isUnassigned(c);
   const dateLine=completed?detail("출고완료일자",c.completedAt||"미정"):detail("출고예정일자",c.dueDate||"미정");
   const processLine=completed?"":detail("현재공정",convertOldProcess(c.process||""));
-  const accidentDetail=partsText(c.accidentParts)?detail("사고부위",partsText(c.accidentParts),"wide"):"";
+  const accidentDetail=partsText(c.accidentParts)?detailHtml("사고부위",partsHtml(c.accidentParts),"wide"):"";
   const phoneDetail=c.customerPhone?detail("고객연락처",c.customerPhone):"";
-  const insuranceDetail=hasInsurance(c)?detail("보험사",insuranceText(c),"wide"):"";
-  const memoDetail=c.memo?detail("특별지시사항",c.memo,"wide"):"";
+  const insuranceDetail=hasInsurance(c)?detailHtml("보험사",insuranceInfoHtml(c),"wide"):"";
+  const memoDetail=c.memo?detail("특이사항",c.memo,"wide"):"";
   const specialDetail=c.special?detail("비고",c.special,"wide"):"";
-  const detailInfo=unassigned&&!completed?`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자","미배정")}`:`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자",unassigned?"미배정":c.owner)}${processLine}${detail("휠/얼라이먼트",c.alignment||"없음")}${c.alignVendor?detail("휠/얼라이먼트 업체",c.alignVendor):""}${c.intakeDate?detail("입고일자",c.intakeDate):""}${dateLine}${phoneDetail}${accidentDetail}${insuranceDetail}${specialDetail}${memoDetail}`;
+  const detailInfo=unassigned&&!completed?`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자","미배정")}`:`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자",unassigned?"미배정":c.owner)}${processLine}${detail("휠/얼라이먼트",c.alignment||"없음")}${c.alignVendor?detail("휠/얼라이먼트 업체",c.alignVendor):""}${c.intakeDate?detail("입고일자",c.intakeDate):""}${dateLine}${phoneDetail}${accidentDetail}${insuranceDetail}${memoDetail}${specialDetail}`;
   let btns="";
   if(completed){
     btns=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action delete" onclick="deleteCompleted('${c.id}')">삭제</button>`;
@@ -1860,6 +1877,7 @@ function openDetail(id){
   history.pushState({screen,selectedOwner,editId,dueFilter,modal:true},"")
 }
 function partsText(v){return normalizeParts(v).join(", ")}
+function detailHtml(l,v,cls=""){return`<div class="detail-line ${cls}"><div class="detail-label">${l}</div><div class="detail-value">${v||""}</div></div>`}
 function detail(l,v,cls=""){return`<div class="detail-line ${cls}"><div class="detail-label">${l}</div><div class="detail-value">${escapeHtml(String(v||""))}</div></div>`}
 function escapeHtml(s){return String(s||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
 function esc(s){return escapeHtml(s).replaceAll("\n"," ")}
