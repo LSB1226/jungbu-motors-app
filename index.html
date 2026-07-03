@@ -1475,6 +1475,94 @@
       vertical-align:1px;
     }
 
+
+    /* V5 FINAL: 담당자 화면 빈칸/여백 완전 축소 */
+    .owner-clean-grid{
+      grid-template-columns:1fr 1fr !important;
+      gap:4px !important;
+      margin-top:8px !important;
+      align-items:start !important;
+    }
+    .owner-clean-grid .info{
+      min-height:0 !important;
+      height:auto !important;
+      padding:6px 8px !important;
+      border-radius:11px !important;
+      display:block !important;
+      justify-content:flex-start !important;
+    }
+    .owner-clean-grid .info.wide{
+      grid-column:1 / -1 !important;
+    }
+    .owner-clean-grid .label{
+      font-size:10px !important;
+      line-height:1.05 !important;
+      margin:0 !important;
+    }
+    .owner-clean-grid .value{
+      font-size:12px !important;
+      line-height:1.18 !important;
+      margin-top:2px !important;
+    }
+    .owner-clean-grid .part-list{
+      gap:3px !important;
+      margin-top:3px !important;
+    }
+    .owner-clean-grid .part-badge{
+      font-size:9.5px !important;
+      padding:2px 5px !important;
+      line-height:1.1 !important;
+    }
+    .owner-clean-grid .info.insurance-compact .value{
+      font-size:11.5px !important;
+      line-height:1.16 !important;
+    }
+    .owner-clean-grid .info.insurance-compact b{
+      display:inline-flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      min-width:32px !important;
+      padding:2px 5px !important;
+      margin-right:4px !important;
+      border-radius:999px !important;
+      background:rgba(96,165,250,.15) !important;
+      border:1px solid rgba(96,165,250,.22) !important;
+      color:#dbeafe !important;
+      font-size:10px !important;
+      line-height:1.05 !important;
+    }
+    .car-card{
+      padding:9px 10px !important;
+      margin-bottom:8px !important;
+      border-radius:16px !important;
+    }
+    .model{
+      font-size:21px !important;
+      line-height:1.05 !important;
+    }
+    .plate{
+      font-size:13px !important;
+      margin-top:1px !important;
+    }
+    .process{
+      font-size:12.5px !important;
+      padding:6px 9px !important;
+      min-width:70px !important;
+    }
+    .updated{
+      margin-top:5px !important;
+      font-size:9.5px !important;
+    }
+    .btn-row{
+      gap:5px !important;
+      margin-top:7px !important;
+    }
+    .action{
+      padding:7px 2px !important;
+      font-size:11.5px !important;
+      border-radius:10px !important;
+    }
+
 </style>
 </head>
 <body>
@@ -1508,7 +1596,7 @@ let cars=[];
 let screen="home",selectedOwner=null,editId=null,dueFilter="",returnScreen="home",returnOwner=null,returnFilter="",modalOpen=false,afterSaveBackHome=false,pendingTopScroll=false,searchQuery="",listSearchQuery="",formMode="assigned";
 let form=emptyForm();
 
-function emptyForm(){return{model:"",plate:"",alignment:"없음",alignVendor:"돼지타이어",intakeDate:"",dueDate:"",customerPhone:"",owner:"권태훈",process:"판금작업중",accidentParts:[],selfInsurer:"",selfClaimNo:"",thirdInsurer:"",thirdClaimNo:"",special:"",memo:""}}
+function emptyForm(){return{model:"",plate:"",alignment:"없음",alignVendor:"돼지타이어",intakeDate:"",dueDate:"",customerPhone:"",owner:"권태훈",process:"판금작업중",accidentParts:[],intakeManager:"",selfInsurer:"",selfClaimNo:"",thirdInsurer:"",thirdClaimNo:"",special:"",memo:""}}
 function convertOldProcess(v){if(v==="판금중"||v==="판금작업")return"판금작업중";if(v==="도장중"||v==="도장작업")return"도장작업중";if(v==="조립")return"조립중";if(PROCESS.includes(v))return v;return"판금작업중"}
 function saveStorage(){}
 function nowDate(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
@@ -1529,7 +1617,7 @@ function isCompleted(c){return c.completed===true || c.status==="출고완료"}
 function isUnassigned(c){return !isCompleted(c) && (c.assigned===false || !c.owner || c.owner==="미배정")}
 function isActiveAssigned(c){return !isCompleted(c) && !isUnassigned(c)}
 function syncForm(){
-  ["model","plate","intakeDate","dueDate","selfInsurer","selfClaimNo","thirdInsurer","thirdClaimNo","special","memo"].forEach(id=>{const el=document.getElementById(id);if(el)form[id]=el.value});
+  ["model","plate","intakeDate","dueDate","intakeManager","selfInsurer","selfClaimNo","thirdInsurer","thirdClaimNo","special","memo"].forEach(id=>{const el=document.getElementById(id);if(el)form[id]=el.value});
   const p2=document.getElementById("customerPhone2");
   const p3=document.getElementById("customerPhone3");
   if(p2||p3){
@@ -1583,7 +1671,7 @@ function phoneMove(el,nextId){
 }
 function accidentBtn(label,cls){const active=normalizeParts(form.accidentParts).includes(label)?"active":"";return`<button type="button" class="part-map-btn ${cls} ${active}" onclick="togglePart('${label}')">${label}</button>`}
 function accidentPartField(){const selected=partsHtml(form.accidentParts)||"<span style='color:#94a3b8;font-size:12px;font-weight:900;'>선택된 사고부위 없음</span>";return`<div class="field"><div class="field-title">사고부위</div><div class="car-map-wrap"><div class="car-map"><div class="car-body-shape"></div><div class="car-hood-line"></div><div class="car-trunk-line"></div><div class="car-left-wheel"></div><div class="car-right-wheel"></div>${accidentBtn("프론트범퍼","front-bumper")}${accidentBtn("후드","hood")}${accidentBtn("프론트펜더(좌)","front-fender-left")}${accidentBtn("프론트펜더(우)","front-fender-right")}${accidentBtn("프론트도어(좌)","front-door-left")}${accidentBtn("프론트도어(우)","front-door-right")}${accidentBtn("사이드스텝(좌)","side-step-left")}${accidentBtn("사이드스텝(우)","side-step-right")}${accidentBtn("리어도어(좌)","rear-door-left")}${accidentBtn("리어도어(우)","rear-door-right")}${accidentBtn("리어펜더(좌)","rear-fender-left")}${accidentBtn("리어펜더(우)","rear-fender-right")}${accidentBtn("트렁크","trunk")}${accidentBtn("리어범퍼","rear-bumper")}${accidentBtn("루프","roof")}${accidentBtn("프론트필러","pillar front-pillar")}${accidentBtn("센터필러","pillar center-pillar")}${accidentBtn("리어필러","pillar rear-pillar")}${accidentBtn("서스펜션","suspension")}</div><div class="part-map-selected"><div class="part-map-selected-title">선택된 사고부위</div>${selected}</div></div></div>`}
-function openEdit(id){rememberReturn();const c=cars.find(x=>x.id===id);if(!c)return;formMode=isUnassigned(c)?"unassignedEdit":"assignedEdit";form={model:c.model||"",plate:c.plate||"",alignment:c.alignment||"없음",alignVendor:c.alignVendor||"돼지타이어",intakeDate:c.intakeDate||"",dueDate:c.dueDate||"",customerPhone:c.customerPhone||"",owner:c.owner||"",process:convertOldProcess(c.process||""),accidentParts:normalizeParts(c.accidentParts),selfInsurer:c.selfInsurer||"",selfClaimNo:c.selfClaimNo||"",thirdInsurer:c.thirdInsurer||"",thirdClaimNo:c.thirdClaimNo||"",special:c.special||"",memo:c.memo||""};editId=id;screen="form";closeModal();pushState();render();forceTop()}
+function openEdit(id){rememberReturn();const c=cars.find(x=>x.id===id);if(!c)return;formMode=isUnassigned(c)?"unassignedEdit":"assignedEdit";form={model:c.model||"",plate:c.plate||"",alignment:c.alignment||"없음",alignVendor:c.alignVendor||"돼지타이어",intakeDate:c.intakeDate||"",dueDate:c.dueDate||"",customerPhone:c.customerPhone||"",owner:c.owner||"",process:convertOldProcess(c.process||""),accidentParts:normalizeParts(c.accidentParts),intakeManager:c.intakeManager||"",selfInsurer:c.selfInsurer||"",selfClaimNo:c.selfClaimNo||"",thirdInsurer:c.thirdInsurer||"",thirdClaimNo:c.thirdClaimNo||"",special:c.special||"",memo:c.memo||""};editId=id;screen="form";closeModal();pushState();render();forceTop()}
 function restoreReturn(){
   if(returnScreen==="unassigned" && form.owner && form.owner!=="미배정"){
     screen="all";
@@ -1611,6 +1699,7 @@ async function saveCar(){
   form.special=(form.special||"").trim();
   form.memo=(form.memo||"").trim();
   form.customerPhone=(form.customerPhone||"").trim();
+  form.intakeManager=(form.intakeManager||"").trim();
   form.selfInsurer=(form.selfInsurer||"").trim();
   form.selfClaimNo=(form.selfClaimNo||"").trim();
   form.thirdInsurer=(form.thirdInsurer||"").trim();
@@ -1622,7 +1711,7 @@ async function saveCar(){
     await carsRef.doc(String(editId)).update({...form,assigned:assignedNow,completed:false,status:"",updatedAt:nowDateTime()});
     restoreReturn();
   }else if(formMode==="unassigned"){
-    await carsRef.add({...form,owner:"",alignment:"없음",alignVendor:"",dueDate:"",customerPhone:"",process:"",accidentParts:[],selfInsurer:"",selfClaimNo:"",thirdInsurer:"",thirdClaimNo:"",special:"",memo:"",assigned:false,completed:false,status:"",createdAtMs:Date.now(),updatedAt:nowDateTime()});
+    await carsRef.add({...form,owner:"",alignment:"없음",alignVendor:"",dueDate:"",customerPhone:"",process:"",accidentParts:[],intakeManager:"",selfInsurer:"",selfClaimNo:"",thirdInsurer:"",thirdClaimNo:"",special:"",memo:"",assigned:false,completed:false,status:"",createdAtMs:Date.now(),updatedAt:nowDateTime()});
     screen="unassigned";
     selectedOwner=null;
     dueFilter="";
@@ -1674,7 +1763,7 @@ function currentCars(){
   if(dueFilter)l=l.filter(c=>isCompleted(c)?(c.completedAt===dueFilter):(c.dueDate===dueFilter));
   const q=(listSearchQuery||"").trim().toLowerCase();
   if(q && (screen==="all"||screen==="owner")){
-    l=l.filter(c=>`${c.model||""} ${c.plate||""} ${c.customerPhone||""} ${c.owner||""} ${c.selfInsurer||""} ${c.selfClaimNo||""} ${c.thirdInsurer||""} ${c.thirdClaimNo||""}`.toLowerCase().includes(q));
+    l=l.filter(c=>`${c.model||""} ${c.plate||""} ${c.customerPhone||""} ${c.owner||""} ${c.intakeManager||""} ${c.selfInsurer||""} ${c.selfClaimNo||""} ${c.thirdInsurer||""} ${c.thirdClaimNo||""}`.toLowerCase().includes(q));
   }
   return l;
 }
@@ -1700,12 +1789,12 @@ function render(){
       formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div>`;
     }else if(isNew){
       if(formMode==="processAdd"){
-        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${customerPhoneField()}${insuranceField()}<div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
+        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${customerPhoneField()}<div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
       }else{
-        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${customerPhoneField()}${insuranceField()}<div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
+        formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${customerPhoneField()}<div class="field"><div class="field-title">직원배정</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`;
       }
     }else{
-      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${assignedEdit?customerPhoneField()+insuranceField():""}${unassignedEdit?`${customerPhoneField()}${insuranceField()}<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`:""}${assignedEdit?`<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div>${accidentPartField()}<div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">비고</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`:`""`}`;
+      formHtml=`${fieldInput("차종","model",form.model)}${fieldInput("차량번호","plate",form.plate)}${alignmentField()}<div class="field"><div class="field-title">입고일자</div><input id="intakeDate" type="date" value="${esc(form.intakeDate)}"></div><div class="field"><div class="field-title">출고예정일자</div><input id="dueDate" type="date" value="${esc(form.dueDate)}"></div>${assignedEdit?customerPhoneField()+insuranceField():""}${unassignedEdit?`${customerPhoneField()}<div class="field"><div class="field-title">담당자 추가</div><div class="choice">${STAFF.map(v=>`<button class="${form.owner===v?"active":""}" onclick="setChoice('owner','${v}')">${v}</button>`).join("")}</div></div><div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div>`:""}${assignedEdit?`${fieldInput("입고 담당자","intakeManager",form.intakeManager)}<div class="field"><div class="field-title">현재공정</div><div class="choice process-choice">${PROCESS.map(v=>`<button class="${form.process===v?"active":""}" onclick="setChoice('process','${v}')">${v}</button>`).join("")}</div></div>${accidentPartField()}<div class="field"><div class="field-title">특이사항</div><textarea id="memo">${escapeHtml(form.memo)}</textarea></div><div class="field"><div class="field-title">비고</div><textarea id="special">${escapeHtml(form.special)}</textarea></div>`:`""`}`;
     }
     root.innerHTML=`<div class="topbar single"><button onclick="goBack()">← 뒤로가기</button></div><div class="page-title">${titleText()}</div><div class="form ${assignedEdit?"status-compact":""}">${formHtml}<button class="save" onclick="saveCar()">저장하기</button></div>`;
     return;
@@ -1745,7 +1834,7 @@ function renderLookupResults(){
   if(!box)return;
   const q=(searchQuery||"").trim().toLowerCase();
   if(!q){box.innerHTML="";return}
-  const result=cars.filter(c=>`${c.model||""} ${c.plate||""} ${c.customerPhone||""} ${c.owner||""} ${c.selfInsurer||""} ${c.selfClaimNo||""} ${c.thirdInsurer||""} ${c.thirdClaimNo||""}`.toLowerCase().includes(q)).slice(0,12);
+  const result=cars.filter(c=>`${c.model||""} ${c.plate||""} ${c.customerPhone||""} ${c.owner||""} ${c.intakeManager||""} ${c.selfInsurer||""} ${c.selfClaimNo||""} ${c.thirdInsurer||""} ${c.thirdClaimNo||""}`.toLowerCase().includes(q)).slice(0,12);
   box.innerHTML=result.length?result.map(c=>`<button class="lookup-item" onclick="openDetail('${c.id}')"><div class="lookup-main"><div class="lookup-model">${escapeHtml(c.model||"-")}</div><div class="lookup-plate">${escapeHtml(c.plate||"-")}</div></div><div class="lookup-tag">${lookupStatus(c)}</div></button>`).join(""):`<div class="empty" style="padding:16px;margin-top:8px;">조회 결과가 없습니다.</div>`;
 }
 function lookupStatus(c){if(isCompleted(c))return"출고완료";if(isUnassigned(c))return"미배정";return c.owner||"-"}
@@ -1785,11 +1874,12 @@ function carCard(c){
   const specialBlock=c.special?info("비고",c.special,"wide special-normal"):"";
   const phoneBlock=c.customerPhone?info("고객연락처",c.customerPhone):"";
   const insuranceBlock=hasInsurance(c)?info("보험사",insuranceInfoHtml(c),"insurance-compact"):"";
-  const alignVendorBlock=c.alignVendor?info("휠/얼라이먼트 업체",c.alignVendor):"";
+  const intakeManagerBlock=c.intakeManager?info("입고 담당자",c.intakeManager):"";
+  const alignVendorBlock=(c.alignVendor && (c.alignment||"없음")!=="없음")?info("휠/얼라이먼트 업체",c.alignVendor):"";
   const memoOnly=c.memo?memoBlock:"";
 
   function isWideInfo(html){
-    return html.includes(' wide') || html.includes('wide ') || html.includes('wide"');
+    return /class="info[^"]*\bwide\b/.test(html);
   }
   function makeWide(html){
     if(isWideInfo(html)) return html;
@@ -1822,11 +1912,12 @@ function carCard(c){
     infoHtml=joinClean([info("담당자","미배정")]);
   }else if(screen==="owner"){
     infoHtml=joinClean([
-      info("휠/얼라이먼트",c.alignment||"없음"),
+      ((c.alignment||"없음")!=="없음")?info("휠/얼라이먼트",c.alignment):"",
       alignVendorBlock,
       c.intakeDate?info("입고일자",c.intakeDate):"",
       c.dueDate?dateInfo:"",
       phoneBlock,
+      intakeManagerBlock,
       insuranceBlock,
       accidentBlock,
       memoOnly,
@@ -1840,6 +1931,7 @@ function carCard(c){
       info("입고일자",c.intakeDate||"미정"),
       dateInfo,
       phoneBlock,
+      intakeManagerBlock,
       insuranceBlock,
       accidentBlock,
       memoOnly,
@@ -1859,9 +1951,10 @@ function openDetail(id){
   const accidentDetail=partsText(c.accidentParts)?detailHtml("사고부위",partsHtml(c.accidentParts),"wide"):"";
   const phoneDetail=c.customerPhone?detail("고객연락처",c.customerPhone):"";
   const insuranceDetail=hasInsurance(c)?detailHtml("보험사",insuranceInfoHtml(c),"wide"):"";
+  const intakeManagerDetail=c.intakeManager?detail("입고 담당자",c.intakeManager):"";
   const memoDetail=c.memo?detail("특이사항",c.memo,"wide"):"";
   const specialDetail=c.special?detail("비고",c.special,"wide"):"";
-  const detailInfo=unassigned&&!completed?`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자","미배정")}`:`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자",unassigned?"미배정":c.owner)}${processLine}${detail("휠/얼라이먼트",c.alignment||"없음")}${c.alignVendor?detail("휠/얼라이먼트 업체",c.alignVendor):""}${c.intakeDate?detail("입고일자",c.intakeDate):""}${dateLine}${phoneDetail}${accidentDetail}${insuranceDetail}${memoDetail}${specialDetail}`;
+  const detailInfo=unassigned&&!completed?`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자","미배정")}`:`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자",unassigned?"미배정":c.owner)}${intakeManagerDetail}${processLine}${detail("휠/얼라이먼트",c.alignment||"없음")}${c.alignVendor?detail("휠/얼라이먼트 업체",c.alignVendor):""}${c.intakeDate?detail("입고일자",c.intakeDate):""}${dateLine}${phoneDetail}${accidentDetail}${insuranceDetail}${memoDetail}${specialDetail}`;
   let btns="";
   if(completed){
     btns=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action delete" onclick="deleteCompleted('${c.id}')">삭제</button>`;
