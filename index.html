@@ -1379,7 +1379,7 @@
     }
     .insurance-row{
       display:grid;
-      grid-template-columns:52px 1fr 1fr;
+      grid-template-columns:52px .72fr 1.28fr;
       gap:8px;
       align-items:center;
     }
@@ -1409,7 +1409,7 @@
       border-color:rgba(96,165,250,.13);
     }
     @media (max-width:390px){
-      .insurance-row{grid-template-columns:48px 1fr 1fr;gap:6px;}
+      .insurance-row{grid-template-columns:48px .72fr 1.28fr;gap:6px;}
       .insurance-label{font-size:13px;height:43px;}
       .insurance-row input{font-size:13.5px;height:43px;padding:9px 8px;}
     }
@@ -1419,6 +1419,44 @@
     .info-grid{align-items:stretch;}
     .insurance-info .value{line-height:1.32;}
     .info.wide .value{line-height:1.35;}
+
+
+    /* TRUE FINAL: 빈칸 없는 담당자 카드 + 보험사 입력칸 비율 */
+    .owner-clean-grid{
+      display:grid !important;
+      grid-template-columns:1fr 1fr !important;
+      gap:6px !important;
+      align-items:stretch !important;
+    }
+    .owner-clean-grid .info{
+      min-height:42px !important;
+      display:flex !important;
+      flex-direction:column !important;
+      justify-content:center !important;
+    }
+    .owner-clean-grid .info.wide{
+      grid-column:1 / -1 !important;
+    }
+    .owner-clean-grid .info.insurance-compact{
+      grid-column:auto !important;
+      background:rgba(96,165,250,.065) !important;
+      border-color:rgba(96,165,250,.13) !important;
+    }
+    .owner-clean-grid .info.insurance-compact .value{
+      line-height:1.24 !important;
+      font-size:12.5px !important;
+    }
+    .owner-clean-grid .info.insurance-compact b{
+      color:#bfdbfe;
+      margin-right:3px;
+    }
+    .insurance-row{
+      grid-template-columns:52px .72fr 1.28fr !important;
+    }
+    @media (max-width:390px){
+      .insurance-row{grid-template-columns:48px .72fr 1.28fr !important;}
+      .owner-clean-grid .info.insurance-compact .value{font-size:12px !important;}
+    }
 
 </style>
 </head>
@@ -1723,24 +1761,75 @@ function carCard(c){
   }else{
     buttons=`<button class="action dark" onclick="openEdit('${c.id}')">상태변경</button><button class="action complete" onclick="completeCar('${c.id}')">출고완료</button><button class="action delete" onclick="deleteUnassigned('${c.id}')">삭제</button>`;
   }
-  const gridCols=completed?"":((unassigned||screen==="unassigned")?` style="grid-template-columns:1fr 1fr;"`:((screen==="owner"||screen==="all")?` style="grid-template-columns:repeat(3,1fr);"`:` style="grid-template-columns:repeat(3,1fr);"`));
+  const gridCols=completed?"":((unassigned||screen==="unassigned")?` style="grid-template-columns:1fr 1fr;"`:` style="grid-template-columns:1fr 1fr 1fr;"`);
   const processHtml=(completed||unassigned)?"":`<span class="process ${processClass(c.process)}">${escapeHtml(convertOldProcess(c.process||""))}</span>`;
   const hasParts=normalizeParts(c.accidentParts).length>0;
   const accidentBlock=hasParts?info("사고부위",partsHtml(c.accidentParts),"wide"):"";
   const specialBlock=c.special?info("비고",c.special,"wide special-normal"):"";
-  const phoneBlock=c.customerPhone?info("고객연락처",c.customerPhone,"phone-wide"):"";
-  const insuranceBlock=hasInsurance(c)?info("보험사",insuranceInfoHtml(c),"insurance-info"):"";
+  const phoneBlock=c.customerPhone?info("고객연락처",c.customerPhone):"";
+  const insuranceBlock=hasInsurance(c)?info("보험사",insuranceInfoHtml(c),"insurance-compact"):"";
   const alignVendorBlock=c.alignVendor?info("휠/얼라이먼트 업체",c.alignVendor):"";
   const memoOnly=c.memo?memoBlock:"";
+
+  function isWideInfo(html){
+    return html.includes(' wide') || html.includes('wide ') || html.includes('wide"');
+  }
+  function makeWide(html){
+    if(isWideInfo(html)) return html;
+    return html.replace('class="info ', 'class="info wide ');
+  }
+  function joinClean(items){
+    const arr=items.filter(Boolean);
+    const out=[];
+    let normalInRow=0;
+    arr.forEach(html=>{
+      if(isWideInfo(html)){
+        if(normalInRow===1 && out.length){
+          out[out.length-1]=makeWide(out[out.length-1]);
+        }
+        out.push(html);
+        normalInRow=0;
+      }else{
+        out.push(html);
+        normalInRow=(normalInRow+1)%2;
+      }
+    });
+    if(normalInRow===1 && out.length){
+      out[out.length-1]=makeWide(out[out.length-1]);
+    }
+    return out.join("");
+  }
+
   let infoHtml="";
   if(unassigned&&!completed){
-    infoHtml=`${info("담당자","미배정")}`;
+    infoHtml=joinClean([info("담당자","미배정")]);
   }else if(screen==="owner"){
-    infoHtml=`${info("휠/얼라이먼트",c.alignment||"없음")}${alignVendorBlock}${c.intakeDate?info("입고일자",c.intakeDate):""}${c.dueDate?dateInfo:""}${phoneBlock}${accidentBlock}${insuranceBlock}${memoOnly}${specialBlock}`;
+    infoHtml=joinClean([
+      info("휠/얼라이먼트",c.alignment||"없음"),
+      alignVendorBlock,
+      c.intakeDate?info("입고일자",c.intakeDate):"",
+      c.dueDate?dateInfo:"",
+      phoneBlock,
+      insuranceBlock,
+      accidentBlock,
+      specialBlock,
+      memoOnly
+    ]);
   }else{
-    infoHtml=`${info("담당자",unassigned?"미배정":c.owner)}${info("휠/얼라이먼트",c.alignment||"없음")}${alignVendorBlock}${info("입고일자",c.intakeDate||"미정")}${dateInfo}${phoneBlock}${accidentBlock}${insuranceBlock}${memoOnly}${specialBlock}`;
+    infoHtml=joinClean([
+      info("담당자",unassigned?"미배정":c.owner),
+      info("휠/얼라이먼트",c.alignment||"없음"),
+      alignVendorBlock,
+      info("입고일자",c.intakeDate||"미정"),
+      dateInfo,
+      phoneBlock,
+      insuranceBlock,
+      accidentBlock,
+      specialBlock,
+      memoOnly
+    ]);
   }
-  return`<div class="car-card"><div class="car-head"><div><div class="model">${escapeHtml(c.model)}</div><div class="plate">${escapeHtml(c.plate)}</div></div>${processHtml}</div><div class="info-grid">${infoHtml}</div><div class="updated">최근수정 ${escapeHtml(c.updatedAt||"-")}</div><div class="btn-row"${gridCols}>${buttons}</div></div>`
+  return`<div class="car-card"><div class="car-head"><div><div class="model">${escapeHtml(c.model)}</div><div class="plate">${escapeHtml(c.plate)}</div></div>${processHtml}</div><div class="info-grid owner-clean-grid">${infoHtml}</div><div class="updated">최근수정 ${escapeHtml(c.updatedAt||"-")}</div><div class="btn-row"${gridCols}>${buttons}</div></div>`
 }
 function partsHtml(v){const arr=normalizeParts(v);return arr.length?`<div class="part-list">${arr.map(x=>`<span class="part-badge">${escapeHtml(x)}</span>`).join("")}</div>`:""}
 function info(l,v,cls=""){return`<div class="info ${cls}"><div class="label">${l}</div><div class="value">${String(v||"").startsWith("<div")?v:escapeHtml(v||"")}</div></div>`}
@@ -1755,7 +1844,7 @@ function openDetail(id){
   const insuranceDetail=hasInsurance(c)?detail("보험사",insuranceText(c),"wide"):"";
   const memoDetail=c.memo?detail("특별지시사항",c.memo,"wide"):"";
   const specialDetail=c.special?detail("비고",c.special,"wide"):"";
-  const detailInfo=unassigned&&!completed?`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자","미배정")}`:`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자",unassigned?"미배정":c.owner)}${processLine}${detail("휠/얼라이먼트",c.alignment||"없음")}${c.alignVendor?detail("휠/얼라이먼트 업체",c.alignVendor):""}${c.intakeDate?detail("입고일자",c.intakeDate):""}${dateLine}${phoneDetail}${accidentDetail}${insuranceDetail}${memoDetail}${specialDetail}`;
+  const detailInfo=unassigned&&!completed?`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자","미배정")}`:`${detail("차종",c.model)}${detail("차량번호",c.plate)}${detail("담당자",unassigned?"미배정":c.owner)}${processLine}${detail("휠/얼라이먼트",c.alignment||"없음")}${c.alignVendor?detail("휠/얼라이먼트 업체",c.alignVendor):""}${c.intakeDate?detail("입고일자",c.intakeDate):""}${dateLine}${phoneDetail}${accidentDetail}${insuranceDetail}${specialDetail}${memoDetail}`;
   let btns="";
   if(completed){
     btns=`<button class="action dark" onclick="openEdit('${c.id}')">편집</button><button class="action delete" onclick="deleteCompleted('${c.id}')">삭제</button>`;
