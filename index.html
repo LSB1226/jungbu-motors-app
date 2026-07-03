@@ -1563,6 +1563,37 @@
       border-radius:10px !important;
     }
 
+
+
+    /* V6 FINAL: 전체/담당자 카드 옆칸 높이 자동 맞춤 */
+    .owner-clean-grid{
+      align-items:stretch !important;
+      grid-auto-rows:auto !important;
+    }
+    .owner-clean-grid .info{
+      height:100% !important;
+      min-height:38px !important;
+      display:flex !important;
+      flex-direction:column !important;
+      justify-content:center !important;
+      align-self:stretch !important;
+    }
+    .owner-clean-grid .info.insurance-compact{
+      height:100% !important;
+      align-self:stretch !important;
+    }
+    .owner-clean-grid .info.insurance-compact .value{
+      display:flex !important;
+      flex-direction:column !important;
+      gap:3px !important;
+    }
+    .owner-clean-grid .info.insurance-compact b{
+      flex:0 0 auto !important;
+    }
+    @media (max-width:390px){
+      .owner-clean-grid .info{min-height:36px !important;}
+    }
+
 </style>
 </head>
 <body>
